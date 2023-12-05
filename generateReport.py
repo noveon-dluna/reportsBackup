@@ -109,7 +109,7 @@ def getOperators(batchid):
 
     # First getting the operator from the equipment_runs table
     try:
-        cur.execute("SELECT employee_id FROM equipment_runs WHERE batch_id='{}'".format(batchid))
+        cur.execute("SELECT DISTINCT employee_id FROM equipment_runs WHERE batch_id='{}'".format(batchid))
         operators = [result[0] for result in cur.fetchall()]
     except:
         operators = []
@@ -118,7 +118,7 @@ def getOperators(batchid):
     # Now getting the employee information from the batches table
     try:
         umccur.execute("SELECT employee_id FROM employees WHERE user_id = \
-                    (SELECT user_id FROM batches WHERE batch_id='{}')".format(batchid))
+                    (SELECT DISTINCT user_id FROM batches WHERE batch_id='{}')".format(batchid))
         batchoperators = sf.makeArray(umccur.fetchall())[0]
     except:
         batchoperators = []
@@ -291,6 +291,8 @@ def getBatchRecipes(batchids):
         # Inserting total weight out into batchids[k][5]
         batchids[k][5] = [batchids[k][5],str(totalweightout) + ' ' + units]
 
+
+
         # Adding in the recipe information gathered above
         batchrecipes.append(recipeinfo)
 
@@ -411,9 +413,9 @@ def traceability(batchids, type):
     # Creating the visual traceability table
     for j in range(len(batchids)):
         k = len(batchids)-j-1
-        pdf.set_xy(pdf.l_margin + j*22, ybefore + 10)
-        pdf.multi_cell(22,3,'\n\n' + batchids[k][3] + '\n' + batchids[k][4] + '\n' + batchids[k][1] + '\n' + batchids[k][5][1] + '\n\n', 
-                    border='L', fill=True)
+        pdf.set_xy(pdf.l_margin + j*24, ybefore + 10)
+        pdf.multi_cell(24,3,'\n\n' + batchids[k][3] + '\n' + batchids[k][4] + '\n' + batchids[k][1] + '\n' + batchids[k][5][1] + '\n\n', 
+                    border='L', fill=True, align='L')
         
     # Setting the line width and color back to default for the rest of the PDF
     pdf.set_line_width(0.2)
@@ -447,6 +449,17 @@ def traceability(batchids, type):
             operators = element[8].split(', ')
             rowheight = len(operators) * 5
 
+            # Determining how many lines will be needed to fit the description
+            description = element[7]
+            descriptionlines = 1
+            while len(description) > 21:
+                descriptionlines += 1
+                description = description[21:]
+            descriptionheight = descriptionlines * 5
+
+            if descriptionheight > rowheight:
+                rowheight = descriptionheight
+
             for j in range(len(element[:9])):
 
                 # Some columns have different widths than others, which is determined below
@@ -460,18 +473,28 @@ def traceability(batchids, type):
                     pdf.cell(18,rowheight,str(element[j][0]),border=1)
                     pdf.cell(18,rowheight,str(element[j][1]),border=1)
                 elif j == 6:
-                    pdf.cell(18,rowheight,str(element[j].date()),border=1)
+                    try:
+                        pdf.cell(18,rowheight,str(element[j].date()),border=1)
+                    except:
+                        pdf.cell(18,rowheight,str(element[j]),border=1)
                 elif j == 7:
-                    pdf.cell(33,rowheight,str(element[j][:20]),border=1)        # Truncating the comment if it's too long
+                    y = pdf.get_y()
+                    x = pdf.get_x()
+                    pdf.multi_cell(33,5,str(element[j]),border='LRT',align='L')        # Truncating the comment if it's too long
+                    # Manually drawing the bottom border of the cell
+                    pdf.line(x,y+rowheight,x+33,y+rowheight)
+                    pdf.set_xy(x + 33, y)
                 elif j == 8:
+                    y = pdf.get_y()
+                    x = pdf.get_x()
                     # Printing the all operators separated by commas
-                    pdf.multi_cell(18,5,str(element[j]),border=1)
+                    pdf.multi_cell(18,5,str(element[j]),border='LRT')
+                    # Manually drawing the bottom and right border of the cell
+                    pdf.line(x,y+rowheight,x+18,y+rowheight)
+                    pdf.line(x+18,y,x+18,y+rowheight)
+                    pdf.set_y(y + rowheight)
                 else:
                     pdf.cell(18,rowheight,str(element[j]),border=1)
-
-        # Adding a blank page to go on the back of the first page if necessary
-        if pdf.get_y() > 100:
-            pdf.add_page()
 
 
 # Creating a lab inspections table
@@ -624,7 +647,7 @@ def overallCompositions(batchids):
 
         # Getting the ICP analysis for each batch
         # First getting the measurement id for every test done for the batch
-        umccur.execute("SELECT id, test_no, DATE(timestamp) FROM results_icp_measurements WHERE batch_id = '{}'".format(batch))
+        umccur.execute("SELECT id, test_no, sample_no, DATE(timestamp) FROM results_icp_measurements WHERE batch_id = '{}'".format(batch))
         icp = sf.makeArray(umccur.fetchall())
 
 
@@ -639,7 +662,7 @@ def overallCompositions(batchids):
 
         # Now, get the elemental analysis data for each batch
         # Getting the measurement ID for each elemental analysis test done for the batch
-        umccur.execute("SELECT id, test_no, DATE(timestamp) FROM results_elementanalyzer_measurements WHERE batch_id = '{}'".format(batch))
+        umccur.execute("SELECT id, test_no, sample_no, DATE(timestamp) FROM results_elementanalyzer_measurements WHERE batch_id = '{}'".format(batch))
         elementanalyzer = sf.makeArray(umccur.fetchall())
 
 
@@ -666,7 +689,7 @@ def overallCompositions(batchids):
                     total += element[1]
 
                 try:
-                    average = round(total / len(eaConcentrations), 2)
+                    average = round(total / len(eaConcentrations), 5)
                 except:
                     # Accounting for the case where results are all zero, so there is no division by zero
                     average = 0
@@ -686,10 +709,11 @@ def overallCompositions(batchids):
 
             for item in elementanalyzer:
                 # Checking to see if the dates are the same
-                if item[2] == element[2]:
+                if item[3] == element[3] and item[2] == element[2]:
 
                     # Adding the elemental analysis results to the temporary list
-                    temp.append(item[3])
+                    temp.append(item[4])
+
 
                 # Finding the average O, N, H, C, and S values for the entries in temp
                 onhcs = ['O', 'N', 'H', 'C', 'S']
@@ -701,7 +725,7 @@ def overallCompositions(batchids):
                             if temp[j][k][0] == onhcs[i]:
                                 total += temp[j][k][1]
                         try:
-                            average = round(total / len(temp), 2)
+                            average = round(total / len(temp), 5)
                         except:
                             average = 0
 
@@ -713,7 +737,7 @@ def overallCompositions(batchids):
             # Adding the average to the ICP results
             try:
                 for x in subarray:
-                    element[3].append(x)
+                    element[4].append(x)
             except:
                 pass
 
@@ -722,30 +746,34 @@ def overallCompositions(batchids):
         for element in elementlist:
             # If the element is not in the ICP results, then add [element, 0] to the ICP results
             for item in icp:
-                if element not in [i[0] for i in item[3]]:
-                    item[3].append([element, 0])
+                if element not in [i[0] for i in item[4]]:
+                    item[4].append([element, 0])
 
         # Normalizing the ICP results
         for item in icp:
             # Getting the total of all the concentrations
             total = 0
-            for element in item[3]:
-                total += float(element[1])
+            for element in item[4]:
+                # If the element is not O, N, H, C, or S, then add it to the total. This is so that only the ICP results get normalized, and not the elementanalyzer results
+                if element[0] not in ['O', 'N', 'H', 'C', 'S']:
+                    total += float(element[1])
 
             # Normalizing the concentrations
-            for element in item[3]:
-                try:
-                    element[1] = round(float(element[1]) / total * 100, 2)
-                except:
-                    element[1] = 0
+            for element in item[4]:
+                if element[0] not in ['O', 'N', 'H', 'C', 'S']:
+                    try:
+                        element[1] = round(float(element[1]) / total * 100, 2)
+                    except:
+                        element[1] = 0
 
             # Calculating the total of the normalized concentrations
             normalizedtotal = 0
-            for element in item[3]:
-                normalizedtotal += element[1]
+            for element in item[4]:
+                if element[0] not in ['O', 'N', 'H', 'C', 'S']:
+                    normalizedtotal += element[1]
 
             # Adding a total to the end of the list
-            item[3].append(['Total', round(normalizedtotal,1)])
+            item[4].append(['Total', round(normalizedtotal,1)])
 
         # Adding the batch number and ICP results to allicp
         allicp.append([batch, icp])
@@ -797,6 +825,7 @@ def overallCompositions(batchids):
 
             # Setting the fill color to light orange if the element is O, N, H, C, or S
             if element in ['O', 'N', 'H', 'C', 'S']:
+                element = element + ' (ppm)'
                 pdf.set_fill_color(255, 204, 153)
 
             # Setting the fill color to light green if the element is Total
@@ -809,7 +838,7 @@ def overallCompositions(batchids):
             pdf.set_xy(pdf.l_margin, pdf.get_y() + 5)
             pdf.cell(14, 5, element, 1, fill=True) # Writing the element as the row header
             # Drawing a dark line on top of the cell if the element is O or Total
-            if element in ['O', 'Total']:
+            if element in ['O (ppm)', 'Total']:
                 pdf.set_line_width(0.5)
                 pdf.line(pdf.get_x(), pdf.get_y(), pdf.get_x()-14, pdf.get_y())
                 pdf.set_line_width(0.2)
@@ -836,19 +865,29 @@ def overallCompositions(batchids):
 
                 # Then, writing the concentration amounts
                 for i in item[1]:
-                    for j in i[3]:
+                    for j in i[4]:
+                        if j[0] in ['O', 'N', 'H', 'C', 'S']:
+                            j[0] = j[0] + ' (ppm)'
                         if j[0] == element:
                             if len(item[1]) > 1:
-                                pdf.cell(9, 5, str(round(j[1], 2)), 1, 0, 'C')
+                                # If the element is O, N, H, C, or S, then the concentration will be in ppm
+                                if element in ['O (ppm)', 'N (ppm)', 'H (ppm)', 'C (ppm)', 'S (ppm)']:
+                                    pdf.cell(9, 5, str(round(j[1]*1000, 2)), 1, 0, 'C')
+                                else:
+                                    pdf.cell(9, 5, str(round(j[1], 2)), 1, 0, 'C')
                                 # Drawing a dark line on the top of the cell if the element is O or Total
-                                if element in ['O', 'Total']:
+                                if element in ['O (ppm)', 'Total']:
                                     pdf.set_line_width(0.5)
                                     pdf.line(pdf.get_x()-9, pdf.get_y(), pdf.get_x(), pdf.get_y())
                                     pdf.set_line_width(0.2)
                             elif len(item[1]) == 1:
-                                pdf.cell(18, 5, str(round(j[1], 2)), 1, 0, 'C')
+                                # If the element is O, N, H, C, or S, then the concentration will be in ppm
+                                if element in ['O (ppm)', 'N (ppm)', 'H (ppm)', 'C (ppm)', 'S (ppm)']:
+                                    pdf.cell(18, 5, str(round(j[1]*1000, 2)), 1, 0, 'C')
+                                else:
+                                    pdf.cell(18, 5, str(round(j[1], 2)), 1, 0, 'C')
                                 # Drawing a dark line on the top of the cell if the element is O or Total
-                                if element in ['O', 'Total']:
+                                if element in ['O (ppm)', 'Total']:
                                     pdf.set_line_width(0.5)
                                     pdf.line(pdf.get_x()-18, pdf.get_y(), pdf.get_x(), pdf.get_y())
                                     pdf.set_line_width(0.2)
@@ -1073,9 +1112,9 @@ def densities(batchids):
     # Finding the average density measurement for just the first and last batch
     for element in batchids:
 
+        batchid = element[3]
         try:
             # First matching the batch ID to the id in UMCDB.batches
-            batchid = element[3]
             umccur.execute("SELECT id FROM batches WHERE batch_id = '{}'".format(batchid))
             batches_id = umccur.fetchone()[0]
 
@@ -1085,7 +1124,7 @@ def densities(batchids):
 
         except:
             results = []
-            print('No density measurements for batch {}'.format(batchid))
+            print('No density measurements for batch {} in UMCDB.density_measurements. \nWill try UMCDB.results_permeameter_measurements instead.'.format(batchid))
 
         
         # If the density measurement exists, add it to the densities list. Otherwise add 0
@@ -1099,8 +1138,22 @@ def densities(batchids):
             avg_density = round(sum(densities) / len(densities),3)
             densitycounts.append(len(densities))
         else:
-            avg_density = 'N/A'
-            densitycounts.append(0)
+
+            # Try to get the density from the results_permeameter_measurements table
+            umccur.execute("SELECT density_g_cm3 FROM results_permeameter_measurements WHERE batch_id = '{}'".format(batchid))
+            results = umccur.fetchall()
+
+            if len(results) > 0:
+                for k in results:
+                    densities.append(k[0])
+
+                # Finding the average density
+                avg_density = round(sum(densities) / len(densities),3)
+                densitycounts.append(len(densities))
+
+            else:
+                avg_density = 'N/A'
+                densitycounts.append(0)
 
         # Adding the average density to the batchids list
         element.append(avg_density)
@@ -1288,85 +1341,86 @@ def massLosses(batchids):
         pdf.set_xy(pdf.l_margin, pdf.get_y() + 25)
     
     pdf.set_font('Helvetica', 'b', 14)
-    pdf.write(5, 'Mass Losses')
+    pdf.write(5, 'Quantity In and Out')
 
-    # Finding the mass input for each batch in batchids from UMCDB.batch_inputs or else with transfer bottles
-    for element in batchids:
-        umccur.execute("SELECT quantity, unit FROM batch_inputs WHERE batch_id = '{}'".format(element[3]))
+    # Adding an empty list to each element of batchids that will contain mass input data from each source
+    for k in range(len(batchids)):
+        batchids[k].append([])
+
+    # Finding the mass input for each batch in batchids from UMCDB.batch_inputs, transfer bottles, and HMI
+    for k in range(len(batchids)):
+
+        umccur.execute("SELECT quantity, unit FROM batch_inputs WHERE batch_id = '{}'".format(batchids[k][3]))
         results = umccur.fetchall()
 
         # Combining the quantity and unit into a string, then adding to the batchids list
         if len(results) > 0:
-            for k in results:
-                mass_input = str(round(k[0],2)) + ' ' + k[1]
-                element.append(mass_input)
+            totalweight = 0
+            for r in results:
+                totalweight += r[0]
+            mass_input = str(round(totalweight,2)) + ' ' + r[1]
+            batchids[k][-1].append(mass_input)
         else:
-            element.append('N/A')
+            batchids[k][-1].append('N/A')
 
-        # If the total weight in from the transfer bottles is greater than 0, then use that value instead
-        totalweightin, totalweightout = sf.transferBottles(element[3], pdf, writetopdf=False)
-        if float(totalweightin) > 0:
-            element[-1] = str(totalweightin) + ' kg'
+        # Getting total weight in from the transfer bottles
+        totalweightin, totalweightout = sf.transferBottles(batchids[k][3], pdf, writetopdf=False)
+        batchids[k][-1].append(str(totalweightin) + ' kg')
+
+        # Getting the mass from HMI using the batch ID
+        cur.execute("SELECT weight FROM equipment_run_weights WHERE equipment_run_id IN (SELECT id FROM equipment_runs WHERE batch_id = '{}')".format(batchids[k][3]))
+        results = cur.fetchall()
+
+        # If there are results, then add them to the element of the batchids list that has the other mass outputs
+        if len(results) > 0:
+            # Adding up the total weight from all the results
+            totalweight = 0
+            for r in results:
+                totalweight += r[0]
+            batchids[k][5].append(str(round(totalweight, 2)) + ' kg')
+        else:
+            batchids[k][5].append('N/A')
+
+    # Using the output weight from each batch to be the input mass for the next batch
+    for k in range(len(batchids)):
+        if k == len(batchids) - 1:
+            batchids[k][-1].append('N/A')
+        else:
+            batchids[k][-1].append(batchids[k+1][5][2])
+
 
 
     # Creating a table that displays mass losses for each step
-    header = ['Step', 'Process', 'Batch ID', 'Mass Loss', 'Quantity In', 'Quantity Out']
+    header = ['Step', 'Process', 'Batch ID', 'Qty In (DB)', 'Qty Out (DB)', 'Qty In (TB)', 'Qty Out (TB)', 'Qty In (HMI)', 'Qty Out (HMI)']
     pdf.set_xy(pdf.l_margin, pdf.get_y() + 10)
     pdf.set_font('Helvetica', '', 8)
 
     # Adding the header
     for k in range(len(header)):
         if k == 0:
-            width = 15
+            width = 10
         elif k == 1:
-            width = 45
+            width = 35
         else:
-            width = 28
+            width = 20
         pdf.cell(width, 5, header[k], border=1, fill=True)
 
-    # Adding the data
-    # Creating a list that will contain all mass loss amounts
-    masslosses = []
+    # Adding the data to the table
     for element in batchids[::-1]:
-
-        # First determining the quantity in and quantity out
-        try:
-            quantity_in = float(element[11].split(' ')[0])
-        except:
-            quantity_in = 0
-        try:
-            if float(element[5][1].split(' ')[0]) > 0:
-                quantity_out = float(element[5][1].split(' ')[0])
-            else:
-                quantity_out = float(element[5][0].split(' ')[0])
-        except:
-            quantity_out = 0
-
-        # Then determining the mass loss. If the process is Material Received, the mass loss is 0
-        if element[1] == 'Material Received':
-            element[11] = element[5][1]
-            massloss = 0
-        else:
-            massloss = round(quantity_in - quantity_out, 1)
-
-        masslosses.append(massloss)
+        print(element)
+        print('\n\n')
 
         # Adding the data to the table
         pdf.set_xy(pdf.l_margin, pdf.get_y() + 5)
-        pdf.cell(15, 5, str(element[0]), border=1, fill=True)
-        pdf.cell(45, 5, str(element[1]), border=1)
-        pdf.cell(28, 5, str(element[3]), border=1)
-        pdf.cell(28, 5, str(massloss), border=1)
-        pdf.cell(28, 5, str(quantity_in), border=1)
-        pdf.cell(28, 5, str(quantity_out), border=1)
-
-    # Writing total mass loss at the bottom of the table
-    # pdf.set_xy(pdf.l_margin, pdf.get_y() + 10)
-    # pdf.set_font('Helvetica', '', 10)
-    # try:
-    #     pdf.write(5, 'Total Mass Loss: {} kg ({}% of beginning mass)'.format(round(sum(masslosses),1), round(sum(masslosses) / float(batchids[-1][5].split(' ')[0]) * 100, 1)))
-    # except:
-    #     pdf.write(5, 'Total Mass Loss: {} kg'.format(round(sum(masslosses),1)))
+        pdf.cell(10, 5, str(element[0]), border=1, fill=True)
+        pdf.cell(35, 5, str(element[1]), border=1)
+        pdf.cell(20, 5, str(element[3]), border=1)
+        pdf.cell(20, 5, str(element[-1][0]), border=1)
+        pdf.cell(20, 5, str(element[5][0]), border=1)
+        pdf.cell(20, 5, str(element[-1][1]), border=1)
+        pdf.cell(20, 5, str(element[5][1]), border=1)
+        pdf.cell(20, 5, str(element[-1][2]), border=1)
+        pdf.cell(20, 5, str(element[5][2]), border=1)
 
 
 # Product Usages section
@@ -1519,6 +1573,9 @@ def comprehensiveReport(batchid, type, multiply=False, pdf=pdf):
             pdf.multi_cell(55,5.5,'Quantity (Transfer Bottles)')
             pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
             pdf.multi_cell(85,5.5,element[0][5][1])
+            pdf.multi_cell(55,5.5,'Quantity (HMI)')
+            pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
+            pdf.multi_cell(85,5.5,element[0][5][2])
             pdf.multi_cell(55,5.5,'Operator ID')
             pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
             pdf.multi_cell(85,5.5,element[0][8])
@@ -1716,4 +1773,4 @@ def createReport(batchid, type, multiply=False):
 
 
 # Creating a report
-createReport(batchid='B230430', type='single', multiply=False)
+createReport(batchid='B230451', type='single', multiply=False)

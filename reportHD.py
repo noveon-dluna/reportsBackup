@@ -598,7 +598,7 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
         pdf.multi_cell(55,5.5,'Output Quantity (Transfer Bottles)')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-6.5)
         pdf.multi_cell(85,5.5,runarray[0][5][1])
-        pdf.multi_cell(55,5.5,'Output Quantity (SCADA)')
+        pdf.multi_cell(55,5.5,'Output Quantity (HMI)')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-6.5)
         pdf.multi_cell(85,5.5,str(runarray[0][5][2]))
         pdf.multi_cell(55,5.5,'Operator ID')

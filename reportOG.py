@@ -28,24 +28,86 @@ cutoffdate = '2021-12-31'
 # Tag IDs #
 ###########
 
-ogattributes_tagids = [{"name":"Average Temperature", "tagid":"8146"},
-                    {"name":"Internal Temperature", "tagid":"7484"},
-                    {"name":"Pressure", "tagid":"7139"},
-                    {"name":"MOT1007", "tagid":"7753"},
-                    {"name":"MOT1003", "tagid":"7736"},
-                    {"name":"FT1021", "tagid":"7535"},
-                    {"name":"FT1021 Setpoint", "tagid":"7537"},
-                    {"name":"PID1017 Setpoint", "tagid":"7799"},
-                    {"name":"TT1016", "tagid":"7471"},
-                    {"name":"TT1017", "tagid":"7472"},
-                    {"name":"TT1018", "tagid":"7473"},
-                    {"name":"TT1022", "tagid":"7484"},
-                    {"name":"PT1034", "tagid":"7734"},
-                    {"name":"Weather Station Temperature", "tagid":"17230"},
-                    {"name":"Weather Station Relative Humidity", "tagid":"17229"},
-                    {"name":"Weather Station Pressure", "tagid":"17226"},
-                    {"name":"HD Platform Temperature", "tagid":"24399"},
-                    {"name":"HD Platform Relative Humidity", "tagid":"24397"}]
+ogattributes_tagids_og1 = [{"name":"Average Temperature", "tagid":"44881"},
+                        {"name":"Internal Temperature", "tagid":"44888"},
+                        {"name":"Pressure", "tagid":"44917"},
+                        {"name":"MOT1007", "tagid":"44904"},
+                        {"name":"MOT1003", "tagid":"44899"},
+                        {"name":"FT1021", "tagid":"44895"},
+                        {"name":"FT1021 Setpoint", "tagid":"44896"},
+                        {"name":"PID1017 Setpoint", "tagid":"44902"},
+                        {"name":"TT1016", "tagid":"44915"},
+                        {"name":"TT1017", "tagid":"44893"},
+                        {"name":"TT1018", "tagid":"44914"},
+                        {"name":"TT1022", "tagid":"44888"},
+                        {"name":"PT1034", "tagid":"44894"},
+                        {"name":"Weather Station Temperature", "tagid":"17230"},
+                        {"name":"Weather Station Relative Humidity", "tagid":"17229"},
+                        {"name":"Weather Station Pressure", "tagid":"17226"},
+                        {"name":"HD Platform Temperature", "tagid":"24399"},
+                        {"name":"HD Platform Relative Humidity", "tagid":"24397"},
+                        {"name":"Active Energy Import", "tagid":"44882"}]
+
+ogattributes_tagids_og2 = [{"name":"Average Temperature", "tagid":"8146"},
+                        {"name":"Internal Temperature", "tagid":"7484"},
+                        {"name":"Pressure", "tagid":"7139"},
+                        {"name":"MOT1007", "tagid":"7753"},
+                        {"name":"MOT1003", "tagid":"7736"},
+                        {"name":"FT1021", "tagid":"7535"},
+                        {"name":"FT1021 Setpoint", "tagid":"7537"},
+                        {"name":"PID1017 Setpoint", "tagid":"7799"},
+                        {"name":"TT1016", "tagid":"7471"},
+                        {"name":"TT1017", "tagid":"7472"},
+                        {"name":"TT1018", "tagid":"7473"},
+                        {"name":"TT1022", "tagid":"7484"},
+                        {"name":"PT1034", "tagid":"7734"},
+                        {"name":"Weather Station Temperature", "tagid":"17230"},
+                        {"name":"Weather Station Relative Humidity", "tagid":"17229"},
+                        {"name":"Weather Station Pressure", "tagid":"17226"},
+                        {"name":"HD Platform Temperature", "tagid":"24399"},
+                        {"name":"HD Platform Relative Humidity", "tagid":"24397"},
+                        {"name":"Active Energy Import", "tagid":"7805"}]
+
+# Tag IDs for og3 and og4 are not updated yet
+ogattributes_tagids_og3 = [{"name":"Average Temperature", "tagid":"8146"},
+                        {"name":"Internal Temperature", "tagid":"7484"},
+                        {"name":"Pressure", "tagid":"7139"},
+                        {"name":"MOT1007", "tagid":"7753"},
+                        {"name":"MOT1003", "tagid":"7736"},
+                        {"name":"FT1021", "tagid":"7535"},
+                        {"name":"FT1021 Setpoint", "tagid":"7537"},
+                        {"name":"PID1017 Setpoint", "tagid":"7799"},
+                        {"name":"TT1016", "tagid":"7471"},
+                        {"name":"TT1017", "tagid":"7472"},
+                        {"name":"TT1018", "tagid":"7473"},
+                        {"name":"TT1022", "tagid":"7484"},
+                        {"name":"PT1034", "tagid":"7734"},
+                        {"name":"Weather Station Temperature", "tagid":"17230"},
+                        {"name":"Weather Station Relative Humidity", "tagid":"17229"},
+                        {"name":"Weather Station Pressure", "tagid":"17226"},
+                        {"name":"HD Platform Temperature", "tagid":"24399"},
+                        {"name":"HD Platform Relative Humidity", "tagid":"24397"},
+                        {"name":"Active Energy Import", "tagid":"44882"}]
+
+ogattributes_tagids_og4 = [{"name":"Average Temperature", "tagid":"8146"},
+                        {"name":"Internal Temperature", "tagid":"7484"},
+                        {"name":"Pressure", "tagid":"7139"},
+                        {"name":"MOT1007", "tagid":"7753"},
+                        {"name":"MOT1003", "tagid":"7736"},
+                        {"name":"FT1021", "tagid":"7535"},
+                        {"name":"FT1021 Setpoint", "tagid":"7537"},
+                        {"name":"PID1017 Setpoint", "tagid":"7799"},
+                        {"name":"TT1016", "tagid":"7471"},
+                        {"name":"TT1017", "tagid":"7472"},
+                        {"name":"TT1018", "tagid":"7473"},
+                        {"name":"TT1022", "tagid":"7484"},
+                        {"name":"PT1034", "tagid":"7734"},
+                        {"name":"Weather Station Temperature", "tagid":"17230"},
+                        {"name":"Weather Station Relative Humidity", "tagid":"17229"},
+                        {"name":"Weather Station Pressure", "tagid":"17226"},
+                        {"name":"HD Platform Temperature", "tagid":"24399"},
+                        {"name":"HD Platform Relative Humidity", "tagid":"24397"},
+                        {"name":"Active Energy Import", "tagid":"44882"}]
 
 
 ############################
@@ -127,12 +189,22 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
     starttime = int(datetime.datetime.timestamp(runinfo[6])*1000)
 
     # Adding 3 hours to the starttime, and calling it the stoptime
-    stoptime = starttime + 3600000*3
+    stoptime = starttime + 3600000*16
 
     print('Stop time is: {}\n'.format(datetime.datetime.fromtimestamp(stoptime/1000)))
 
     totalruntime = datetime.datetime.fromtimestamp(stoptime/1000) - datetime.datetime.fromtimestamp(starttime/1000)
 
+     # Determining the correct set of tags depending on what equipment was used
+    equipment_id = runinfo[1]
+    if equipment_id == 31:
+        ogattributes_tagids = ogattributes_tagids_og1
+    elif equipment_id == 32:
+        ogattributes_tagids = ogattributes_tagids_og2
+    elif equipment_id == 33:
+        ogattributes_tagids = ogattributes_tagids_og3
+    elif equipment_id == 34:
+        ogattributes_tagids = ogattributes_tagids_og4
 
     # Now get data from SCADA database between start and stop times
     ogattributes = []
@@ -150,6 +222,9 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
 
         obscure(subarray)
         ogattributes.append(subarray)
+
+    # Finding the total energy used during the run
+    totalenergy = ogattributes[18][-1][1] - ogattributes[18][0][1]
 
 
 
@@ -314,6 +389,46 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
             print('Unable to create Furnace Pressure plot.\n')
 
 
+    # Furnace energy and temperature
+    def ogEnergy(pdf, halfsize=False, xadjust=0, yadjust=0):
+            
+            try:
+                # Creating the figure
+                fig, ax1 = plt.subplots(figsize=(10,6))
+                ax1.grid(linestyle='--', linewidth=1)
+                ax2 = ax1.twinx()
+    
+                # Putting plot on the figure
+                ax1.plot([(x[2] - starttime)/3600000 for x in ogattributes[0]],[x[1] for x in ogattributes[0]],label = 'Average Temperature')
+                ax2.plot([(x[2] - starttime)/3600000 for x in ogattributes[18]],[x[1] for x in ogattributes[18]],label = 'Active Energy Import', color='black')
+    
+                # Plotting empty arrays to ax1 just so that the legend will have everything
+                ax1.plot([],[],color='black',label = 'Active Energy Import')
+
+                # Taking care of labeling
+                ax1.set_xlabel('Time Elapsed (Hours)', fontsize=font_size)
+                ax1.set_ylabel('Temperature (C)', fontsize=font_size)
+                ax2.set_ylabel('Energy (kWh)', fontsize=font_size)
+    
+                legend = ax1.legend(loc='upper center', bbox_to_anchor=(0.5,-0.1),
+                                    fancybox=True, shadow=True, ncol=2)
+                
+                # Saving figure and clearing everything
+                plt.savefig(filepath + 'ogEnergy.png', bbox_inches='tight')
+                ax1.clear()
+                ax2.clear()
+                plt.cla()
+    
+                # Add plot to the PDF
+                sf.addPlot(pdf, 'Furnace Energy and Temperature', filepath + 'ogEnergy.png', halfsize=halfsize, xadjust=xadjust, yadjust=yadjust)
+
+            except:
+                # Printing to the PDF that there was an error
+                sf.writeHeader(pdf,'Furnace Energy and Temperature',halfsize=halfsize)
+                pdf.write(10, 'Unable to create Furnace Energy and Temperature plot.\n\n')
+                # Printing to the console
+                print('Unable to create Furnace Energy and Temperature plot.\n')
+
     # Outdoor Weather Station
     def outdoorWeatherStation(pdf, halfsize=False, xadjust=0, yadjust=0):
 
@@ -453,6 +568,9 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
         pdf.multi_cell(55,5.5,'Output Quantity (Transfer Bottles)')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-6.5)
         pdf.multi_cell(85,5.5,runarray[0][5][1])
+        pdf.multi_cell(55,5.5,'Output Quantity (HMI)')
+        pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-6.5)
+        pdf.multi_cell(85,5.5,runarray[0][5][2])
         pdf.multi_cell(55,5.5,'Operator ID')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-6.5)
         pdf.multi_cell(85,5.5,runarray[0][8])
@@ -468,6 +586,9 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
         pdf.multi_cell(55,5.5,'Total Run Time')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-6.5)
         pdf.multi_cell(85,5.5,str(totalruntime))
+        pdf.multi_cell(55,5.5,'Energy Consumption')
+        pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-6.5)
+        pdf.multi_cell(85,5.5,str(totalenergy) + ' kWh')
         pdf.multi_cell(55,5.5,'Multiplier Applied?')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         if multiply == True:
@@ -500,6 +621,7 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
         ogArgonFlow(pdf)
         ogFurnaceTemp(pdf)
         ogPressure(pdf)
+        ogEnergy(pdf)
 
         # Adding in the list of tag IDs that were used to gather data
         sf.addTags(ogattributes_tagids, pdf=pdf)
@@ -549,6 +671,9 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
             pdf.set_y(10)
 
         ogPressure(pdf=pdf, halfsize=True, xadjust=90)
+
+        ybefore = pdf.get_y()
+        ogEnergy(pdf=pdf, halfsize=True)
 
         pdf.add_page()
         indoorWeatherStation(pdf=pdf, halfsize=True)

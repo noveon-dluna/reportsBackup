@@ -75,9 +75,9 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
     # Tagids for temp measurements, pressure, etc.
     attributes_tagids_sf1 = [{"name":"Pressure", "tagid":"27745"},   #1002
                             {"name":"Vacuum", "tagid":"27716"},     #975
-                            {"name":"Active Power", "tagid":"3960"},
-                            {"name":"Apparent Power", "tagid":"3972"},
-                            {"name":"Active Energy Import", "tagid":"4267"},
+                            {"name":"Active Power", "tagid":"6497"}, #3960
+                            {"name":"Apparent Power", "tagid":"6505"}, #3972
+                            {"name":"Active Energy Import", "tagid":"6465"}, # 6465, 4267  _panel_ehd3_/sinteringfurnace1/4_meter43204-4_meter43204/4_meter43204
                             {"name":"Front Temperature", "tagid":"1840"},
                             {"name":"Center Temperature", "tagid":"1839"},
                             {"name":"Rear Temperature", "tagid":"1843"},
@@ -137,9 +137,9 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
     
     attributes_tagids_sf3 = [{"name":"Pressure", "tagid":"29597"},
                             {"name":"Vacuum", "tagid":"29615"},
-                            {"name":"Active Power", "tagid":"6606"},        # Incorrect tag ID
-                            {"name":"Apparent Power", "tagid":"6604"},      # Incorrect tag ID
-                            {"name":"Active Energy Import", "tagid":"6601"},    # Incorrect tag ID
+                            {"name":"Active Power", "tagid":"10386"},
+                            {"name":"Apparent Power", "tagid":"10388"},      
+                            {"name":"Active Energy Import", "tagid":"10391"},
                             {"name":"Front Temperature", "tagid":"1840"},
                             {"name":"Center Temperature", "tagid":"1839"},
                             {"name":"Rear Temperature", "tagid":"1843"},
@@ -271,15 +271,22 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
     year = day[0:4]
     month = day[5:7]
 
-    # If the day is on or before the cutoff date, then change the database name to the appropriate year
+    # If the day is on or before the cutoff date, then change the database name to the appropriate name
     if day <= cutoffdate:
         database = 'SCADA_' + year
     else:
         database = 'SCADA_' + year + '_' + month
 
     # Generating name of the first table to be looked at, based off of timestamp associated with batch ID input
-    starttable = database + '.sqlt_data_1_' + runinfo[7].strftime("%Y%m%d")
-    tables = [starttable]
+    # If the start time is before 7:47 AM, then the table will be the previous day's table. Otherwise it is the same day's table
+    if runinfo[7].hour < 7 or (runinfo[7].hour == 7 and runinfo[7].minute < 47):
+        starttable = database + '.sqlt_data_1_' + (runinfo[7] - datetime.timedelta(days=1)).strftime("%Y%m%d")
+        nexttable = database + '.sqlt_data_1_' + runinfo[7].strftime("%Y%m%d")
+        tables = [starttable, nexttable]
+    else:
+        starttable = database + '.sqlt_data_1_' + runinfo[7].strftime("%Y%m%d")
+        tables = [starttable]
+    currentday = runinfo[7]
 
     # Determining the correct on/off tag for the equipment, and correct set of tags
     equipment_id = runinfo[1]
@@ -303,12 +310,18 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
     # Finding start and stop times #
     ################################
 
-    # Getting tag 5872 data from start table
-    cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({})".format(starttable,onoff))
-    onoffdata = sf.makeArray(cur.fetchall())
+    # Getting tag 5872 data from start table(s)
+    onoffdata = []
+    for table in tables:
+        print(table)
+        cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({})".format(table,onoff))
+        onoffdata += sf.makeArray(cur.fetchall())
 
     # Now determining where the start point of the run is
     startpoint = [i for i in range(1,len(onoffdata)) if onoffdata[i-1][0] == 0 and onoffdata[i][0] == 1]
+    print('Initial startpoints: {}'.format(startpoint))
+    initialstarttimes = [datetime.datetime.fromtimestamp(onoffdata[i][1]/1000) for i in startpoint]
+    print('Initial starttimes: {}'.format(initialstarttimes))
 
 
     # If there are multiple startpoints, then use the one whose index corresponds closest to the date listed in runinfo[7]
@@ -350,7 +363,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                 startpoint = []
 
     # If the startpoint was not in the table, then get the previous table and check for the startpoint in there
-    currentday = runinfo[7]
+    
     while startpoint == []:
 
         # Getting the previous day
@@ -387,10 +400,14 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
 
     # Now determining where the end point of the run is
+    print('Startpoint: {}'.format(startpoint))
+    print('Length of onoffdata: {}'.format(len(onoffdata)))
     endpoint = [i for i in range(startpoint[-1],len(onoffdata)-1) if onoffdata[i][0] == 1 and onoffdata[i+1][0] == 0]
 
     # If the endpoint was not in the table, then get the next table and check for the endpoint in there
     while endpoint == []:
+
+        print('The endpoint for batch ID {} was not in the table. Looking in the next table...'.format(batchid))
 
         # Getting the next day
         nextday = currentday + datetime.timedelta(days=1)
@@ -406,6 +423,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         # Finding the table associated with the next day
         nexttable = database + '.sqlt_data_1_' + nextday.strftime('%Y%m%d')
         tables.append(nexttable)
+        print(tables)
 
         # Getting tag 5872 data from next table
         cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({})".format(nexttable,onoff))
@@ -414,39 +432,51 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         
         # Now determining where the end point of the run is
         endpoint = [i for i in range(startpoint[-1],len(onoffdata)-1) if onoffdata[i][0] == 1 and onoffdata[i+1][0] == 0]
+
+        # Since the endpoint is being searched for in the next table, use the first endpoint that comes up
+        if len(endpoint) > 0:
+            endpoint = [endpoint[0]]
+        
         currentday = nextday
 
 
     # Determining exact start and stop timestamps
-    # In case there are multiple runs on the same day (test runs etc) Make the start point be the very first of the day, and end point is the very last
+    # In case there are multiple runs on the same day (test runs etc) Make the start point be the very first of the day, and end point is the very last? Might change
     starttime = onoffdata[startpoint[-1]][1]
-    stoptime = onoffdata[endpoint[0]][1]
+    stoptime = onoffdata[endpoint[-1]][1]
+    print(datetime.datetime.fromtimestamp(stoptime/1000))
 
 
 
-    # Looking at the furnace temperature at the stoptime. If the temperature is above 50, then the stoptime will be the point when the temperature drops below 50
+    # Looking at the furnace temperature at the stoptime. If the temperature is above 75, then the stoptime will be the point when the temperature drops below 75
     # Getting the furnace temperature data from the tables
-    cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp < {} ORDER BY t_stamp DESC LIMIT 1".format(tables[-1],sf.getAllTags(attributes_tagids[-1]['tagid']),stoptime))
-    result = sf.makeArray(cur.fetchall())[0]
-    furnace_temp = result[0]
+    try:
+        cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp < {} ORDER BY t_stamp DESC LIMIT 1".format(tables[-1],sf.getAllTags(attributes_tagids[-1]['tagid']),stoptime))
+        result = sf.makeArray(cur.fetchall())[0]
+        furnace_temp = result[0]
+    except:
+        furnace_temp = 76
 
-    # If the furnace temperature is above 50, then find the point when the temperature drops below 50
-    while furnace_temp > 50:
+    # If the furnace temperature is above 75, then find the point when the temperature drops below 75
+    while furnace_temp > 75:
 
-        print('\n\n\nFurnace temperature is above 50 at the end of the run. Looking for the point when the temperature drops below 50...')
+        print('\n\n\nFurnace temperature is above 75 C at the end of the run. Looking for the point when the temperature drops below 75...')
 
-        # Getting the first furnace temperature that is under 50 and past the stoptime
-        cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp > {} AND intvalue < {} ORDER BY t_stamp ASC".format(tables[-1],sf.getAllTags(attributes_tagids[-1]['tagid']),stoptime,50))
+        # Getting the first furnace temperature that is under 75 and past the stoptime
+        cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp > {} AND intvalue < {} ORDER BY t_stamp ASC LIMIT 1".format(tables[-1],sf.getAllTags(attributes_tagids[-1]['tagid']),stoptime,75))
 
         try:
             result = sf.makeArray(cur.fetchall())[0]
+            print(result)
             furnace_temp = result[0]
             stoptime = result[1]
+            print('New stoptime: {}'.format(datetime.datetime.fromtimestamp(stoptime/1000)))
+            print(tables)
         except:
-            print('All furnace temps in this table after the stoptime are above 50. Will check the next table')
+            print('All furnace temps in this table after the stoptime are above 75. Will check the next table')
 
-        # If the furnace temperature is still above 50, then add the next table to the list of tables
-        if furnace_temp > 50:
+        # If the furnace temperature is still above 75, then add the next table to the list of tables
+        if furnace_temp > 75:
             nextday = currentday + datetime.timedelta(days=1)
             year = nextday.strftime('%Y')
             month = nextday.strftime('%m')
@@ -949,7 +979,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
     # Calculating total energy used during the run
     try:
-        energyused = sf.twoDecimals(energyimport[-1] - energyimport[0])
+        energyused = sf.twoDecimals((energyimport[-1] - energyimport[0])/1000)
     except:
         energyused = 0
 
@@ -1340,20 +1370,20 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             ax1.plot(settimes,settemps,'k--', label = 'Setpoint Temperatures')
 
             # Plotting temperature from the thermocouple data if the report type isn't single
-            if reporttype != 'single':
-                # Plotting temperature data from the probedata array, with the label being the thermocouple number
-                for probe in probedata:
+            # if reporttype != 'single':
+            #     # Plotting temperature data from the probedata array, with the label being the thermocouple number
+            #     for probe in probedata:
 
-                    # Creating a label for the thermocouple number by matching the tagid with the name in probe_tagids
-                    for element in probe_tagids:
-                        if element["tagid"] == str(probe[0][0]):
-                            label = str(element["name"])
-                            break
-                        else:
-                            label = probe[0][0]
+            #         # Creating a label for the thermocouple number by matching the tagid with the name in probe_tagids
+            #         for element in probe_tagids:
+            #             if element["tagid"] == str(probe[0][0]):
+            #                 label = str(element["name"])
+            #                 break
+            #             else:
+            #                 label = probe[0][0]
 
-                    # Plotting the temperature data
-                    ax1.plot([(x[2] - starttime)/3600000 for x in probe],obscure([x[1] for x in probe],type='temperature'), label = label)
+            #         # Plotting the temperature data
+            #         ax1.plot([(x[2] - starttime)/3600000 for x in probe],obscure([x[1] for x in probe],type='temperature'), label = label)
 
                 # # If the front thermocouple data is available, then plot all 18 thermocouples
                 # if len(tempsf) > 0:
@@ -2504,7 +2534,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             ax3 = ax1.twinx()
             ax3.spines["right"].set_position(("axes", 1.1))
             ax3.plot(energyimporttime,energyimport, color = 'r',label = 'Energy Import')
-            ax3.set_ylabel('Energy (kVAh)',fontsize=font_size)
+            ax3.set_ylabel('Energy (Wh)',fontsize=font_size)
 
             legend = fig.legend(loc='upper center', bbox_to_anchor=(0.5, 0),
                     fancybox=True, shadow=True, ncol=4)
@@ -2537,7 +2567,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
             # Plotting furnace energy and temperature
             fig, ax1 = sf.createPlot(x=[energyimporttime], y=[energyimport], 
-                                    labels=['Energy Import'], xlabel='Time Elapsed (Hours)', ylabel='Energy (kVAh)', fixticks=False)
+                                    labels=['Energy Import'], xlabel='Time Elapsed (Hours)', ylabel='Energy (Wh)', fixticks=False)
 
             # Set grid to use minor tick locations. 
             ax1.grid(which = 'minor', linestyle=':')
@@ -2564,7 +2594,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             legend.remove()
 
             # Add plot to PDF
-            sf.addPlot(pdf, 'Energy used during the run: {} kVAh'.format(energyused),filepath + 'furnaceenergy' + iteration + '.png', halfsize=halfsize, xadjust=xadjust, yadjust=yadjust)
+            sf.addPlot(pdf, 'Energy used during the run: {} kWh'.format(energyused),filepath + 'furnaceenergy' + iteration + '.png', halfsize=halfsize, xadjust=xadjust, yadjust=yadjust)
 
         except:
             # Printing to the PDF that there was an error
@@ -2778,7 +2808,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         pdf.multi_cell(55,5.5,'Output Quantity (Transfer Bottles)')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         pdf.multi_cell(85,5.5,runarray[0][5][1])
-        pdf.multi_cell(55,5.5,'Output Quantity (SCADA)')
+        pdf.multi_cell(55,5.5,'Output Quantity (HMI)')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         pdf.multi_cell(85,5.5,str(runarray[0][5][2]))
         pdf.multi_cell(55,5.5,'Operator ID')
@@ -2798,7 +2828,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         pdf.multi_cell(85,5.5,str(totalruntime))
         pdf.multi_cell(55,5.5,'Power Consumption')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
-        pdf.multi_cell(85,5.5,str(energyused) + ' kVAh')
+        pdf.multi_cell(85,5.5,str(energyused) + ' kWh')
         pdf.multi_cell(55,5.5,'Multiplier Applied?')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         if multiply == True:
@@ -2864,7 +2894,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         pdf.multi_cell(85,5.5,str(totalruntime))
         pdf.multi_cell(55,5.5,'Power Consumption')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
-        pdf.multi_cell(85,5.5,str(energyused) + ' kVAh')
+        pdf.multi_cell(85,5.5,str(energyused) + ' kWh')
         pdf.multi_cell(55,5.5,'Multiplier Applied?')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         if multiply == True:
@@ -2932,7 +2962,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         pdf.multi_cell(55,5.5,'Output Quantity (Transfer Bottles)')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         pdf.multi_cell(85,5.5,runarray[5][1])
-        pdf.multi_cell(55,5.5,'Output Quantity (SCADA)')
+        pdf.multi_cell(55,5.5,'Output Quantity (HMI)')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         pdf.multi_cell(85,5.5,str(runarray[5][2]))
         pdf.multi_cell(55,5.5,'Operator ID')
@@ -2952,7 +2982,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         pdf.multi_cell(85,5.5,str(totalruntime))
         pdf.multi_cell(55,5.5,'Power Consumption')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
-        pdf.multi_cell(85,5.5,str(energyused) + ' kVAh')
+        pdf.multi_cell(85,5.5,str(energyused) + ' kWh')
         pdf.multi_cell(55,5.5,'Multiplier Applied?')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         if multiply == True:

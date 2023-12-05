@@ -3,7 +3,7 @@
 """
 Notes:
     - Need to specify a better way to get the BH data file, in case there are multiple files with the same batch ID
-
+    - Will switch to just plotting the BH loop from every file's data
 """
 
 #################################
@@ -40,17 +40,26 @@ def getBHdata(batchID):
         if len(bhfiles) > 1:
             bhfiles.sort(key=os.path.getmtime)
             bhfile = bhfiles[-1]
+        else:
+            bhfile = bhfiles[0]
 
-        bhfile = bhfiles[0]
         # Reading the file into a dataframe
         bhdata = pd.read_csv(bhfile, header=0, index_col=False)
+
+        # Creating a list with dataframes of each BH loop
+        allbhdata = []
+        for file in bhfiles:
+            allbhdata.append(pd.read_csv(file, header=0, index_col=False))
+
         success = True
+
     except:
         bhdata = pd.DataFrame()
+        allbhdata = [pd.DataFrame()]
         success = False
 
     # Returning the dataframe
-    return bhdata, success
+    return allbhdata, bhdata, success
 
 
 #############################################
@@ -63,22 +72,28 @@ def bhLoop(batchID, filepath):
     batchID = batchID.upper()
 
     # Getting the BH data
-    bhdata, success = getBHdata(batchID)
+    allbhdata, bhdata, success = getBHdata(batchID)
 
-    # If there was BH data, then create the plot
+    # If there was BH data, then create the plot using all of the data
     if success == True:
 
         # Creating the figure
         fig, ax1 = plt.subplots(figsize=(15,10))
 
         # Plotting the BH data
-        ax1.plot(bhdata['H_kA_m'], bhdata['B_T'], color='blue', label='BH Loop')
-        ax1.plot(bhdata['H_kA_m'], bhdata['J_T'], color='blue', label='JH Loop')
+        for data in allbhdata:
+            ax1.plot(data['H_kA_m'].to_numpy(), data['B_T'].to_numpy(), color='blue', label='BH Loop')
+            ax1.plot(data['H_kA_m'].to_numpy(), data['J_T'].to_numpy(), color='blue', label='JH Loop')
 
         # Setting the x and y axis labels
         ax1.set_xlabel('[kA/m]', loc='left')
         ax1.set_ylabel('[T]', loc='top')
-        ax1.set_title('BH Loop for Batch ' + batchID + '\n\n', fontsize=20)
+        
+        # Setting the title based on how many results were found
+        if len(allbhdata) == 1:
+            ax1.set_title('BH Loop for Batch ' + batchID + '\n\n', fontsize=20)
+        else:
+            ax1.set_title('BH Loops for Batch ' + batchID + ' - ' + str(len(allbhdata)) + ' Results' + '\n\n', fontsize=20)
 
         # Setting the x and y axis limits
         ax1.set_xlim(-1600, 0)
@@ -172,12 +187,15 @@ def bhLoop(batchID, filepath):
         # Finding BH Max #
         ##################
 
-        # Multiplying B and H together to find each product, then finding the maximum of all those
-        BHmax = np.max([abs(a*b) for a,b in zip(bhdata['B_G'], bhdata['H_Oe']) if a>0])
+        # Doing this for all of the data
+        for data in allbhdata:
+            
+            # Multiplying B and H together to find each product, then finding the maximum of all those
+            BHmax = np.max([abs(a*b) for a,b in zip(bhdata['B_G'], bhdata['H_Oe']) if a>0])
 
-        # Creating a dotted line representing -BHMax/H
-        BHmaxH = [-BHmax/(1000*i) for i in np.linspace(-1, -20000, 1000)]
-        ax2.plot(np.linspace(-1, -1600, 1000), BHmaxH, color='LightGray', linestyle='--', linewidth=1)
+            # Creating a dotted line representing -BHMax/H
+            BHmaxH = [-BHmax/(1000*i) for i in np.linspace(-1, -20000, 1000)]
+            ax2.plot(np.linspace(-1, -1600, 1000), BHmaxH, color='LightGray', linestyle='--', linewidth=1)
 
         # Fixing the layout of the figure so axes don't overlap
         # plt.show()

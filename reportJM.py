@@ -252,11 +252,11 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
 
     # Finding the total energy used
     try:
-        totalenergyjm = round(jmattributes[18][-1][1] - jmattributes[18][0][1],1) # kVAh
+        totalenergyjm = round((jmattributes[18][-1][1] - jmattributes[18][0][1])/1000,1) # kVAh
     except:
         totalenergyjm = 0
     try:
-        totalenergycomp = round(jmattributes[21][-1][1] - jmattributes[21][0][1],1) # kVAh
+        totalenergycomp = round((jmattributes[21][-1][1] - jmattributes[21][0][1])/1000,1) # kVAh
     except:
         totalenergycomp = 0
 
@@ -548,7 +548,7 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
             ax1.set_xlabel('Time Elapsed (Hours)', fontsize=font_size)
             ax1.set_ylabel('Power (kW)', fontsize=font_size)
             ax2.set_ylabel('Power (kVA)', fontsize=font_size)
-            ax3.set_ylabel('Energy (kVAh)', fontsize=font_size)
+            ax3.set_ylabel('Energy (Wh)', fontsize=font_size)
 
             legend = ax1.legend(loc='upper center', bbox_to_anchor=(0.5,-0.1),
                                 fancybox=True, shadow=True, ncol=3)
@@ -561,7 +561,7 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
             plt.cla()
 
             # Adding plot to the PDF
-            sf.addPlot(pdf, 'Jet Mill Power | Energy Used: {} kVAh'.format(totalenergyjm), filepath + 'jmPower.png', halfsize=halfsize, xadjust=xadjust, yadjust=yadjust)
+            sf.addPlot(pdf, 'Jet Mill Power | Energy Used: {} kWh'.format(totalenergyjm), filepath + 'jmPower.png', halfsize=halfsize, xadjust=xadjust, yadjust=yadjust)
 
         except:
             # Printing to the PDF that there was an error
@@ -600,7 +600,7 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
             ax1.set_xlabel('Time Elapsed (Hours)', fontsize=font_size)
             ax1.set_ylabel('Power (kW)', fontsize=font_size)
             ax2.set_ylabel('Power (kVA)', fontsize=font_size)
-            ax3.set_ylabel('Energy (kVAh)', fontsize=font_size)
+            ax3.set_ylabel('Energy (Wh)', fontsize=font_size)
             ax3.ticklabel_format(style='plain')
 
             legend = ax1.legend(loc='upper center', bbox_to_anchor=(0.5,-0.1),
@@ -614,7 +614,7 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
             plt.cla()
 
             # Adding plot to the PDF
-            sf.addPlot(pdf, 'Compressor Power | Energy Used: {} kVAh'.format(totalenergycomp), filepath + 'jmCompressorPower.png', halfsize=halfsize, xadjust=xadjust, yadjust=yadjust)
+            sf.addPlot(pdf, 'Compressor Power | Energy Used: {} kWh'.format(totalenergycomp), filepath + 'jmCompressorPower.png', halfsize=halfsize, xadjust=xadjust, yadjust=yadjust)
 
         except:
             # Printing to the PDF that there was an error
@@ -897,6 +897,9 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
         pdf.multi_cell(55,5.5,'Output Quantity (Transfer Bottles)')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         pdf.multi_cell(85,5.5,runarray[0][5][1])
+        pdf.multi_cell(55,5.5,'Output Quantity (HMI)')
+        pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
+        pdf.multi_cell(85,5.5,runarray[0][5][2])
         pdf.multi_cell(55,5.5,'Operator ID')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         pdf.multi_cell(85,5.5,runarray[0][8])
@@ -914,7 +917,7 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
         pdf.multi_cell(85,5.5,str(totalruntime))
         pdf.multi_cell(55,5.5,'Total Energy Consumption \n(Jet Mill + Compressor)')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-11.0)
-        pdf.multi_cell(85,11.0,str(totalenergyjm + totalenergycomp) + ' kVAh')
+        pdf.multi_cell(85,11.0,str(round(totalenergyjm + totalenergycomp,2)) + ' kWh')
         pdf.multi_cell(55,5.5,'Multiplier Applied?')
         pdf.set_xy(55 + pdf.l_margin,pdf.get_y()-5.5)
         if multiply == True:
