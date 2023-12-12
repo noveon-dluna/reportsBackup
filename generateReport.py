@@ -1734,7 +1734,10 @@ def singleReport(batchid, type, multiply=False):
 
     # Make the correct type of report based on the equipment ID
     if batchids[0][2] in sinteringfurnaces:
-        rsf.makeReport(batchid=batch, runarray=batchids[0], filepath=filepath, multiply=multiply, reporttype='single', pdf=pdf,iteration='')
+        if type == 'single':
+            rsf.makeReport(batchid=batch, runarray=batchids[0], filepath=filepath, multiply=multiply, reporttype='single', pdf=pdf,iteration='')
+        elif type == 'full':
+            rsf.makeReport(batchid=batch, runarray=batchids[0], filepath=filepath, multiply=multiply, reporttype='full', pdf=pdf,iteration='')
 
     elif batchids[0][2] in jetmills:
         rjm.makeReport(runarray=batchrecipes[0], filepath=filepath, pdf=pdf, reporttype='singular', multiply=multiply)
@@ -1755,8 +1758,8 @@ def singleReport(batchid, type, multiply=False):
 
 def createReport(batchid, type, multiply=False):
     
-    # If the report type is single, then create a single report
-    if type == 'single':
+    # If the report type is single or full, then create a single report
+    if type == 'single' or type == 'full':
         singleReport(batchid, type, multiply)
 
     # If the report type is comprehensive, then create a comprehensive report
@@ -1773,4 +1776,4 @@ def createReport(batchid, type, multiply=False):
 
 
 # Creating a report
-createReport(batchid='B230451', type='single', multiply=False)
+createReport(batchid='B230028', type='full', multiply=False)

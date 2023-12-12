@@ -78,24 +78,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                             {"name":"Active Power", "tagid":"6497"}, #3960
                             {"name":"Apparent Power", "tagid":"6505"}, #3972
                             {"name":"Active Energy Import", "tagid":"6465"}, # 6465, 4267  _panel_ehd3_/sinteringfurnace1/4_meter43204-4_meter43204/4_meter43204
-                            {"name":"Front Temperature", "tagid":"1840"},
-                            {"name":"Center Temperature", "tagid":"1839"},
-                            {"name":"Rear Temperature", "tagid":"1843"},
-                            {"name":"P1", "tagid":"1833"},
-                            {"name":"P2", "tagid":"1834"},
-                            {"name":"P3", "tagid":"1835"},
-                            {"name":"P4", "tagid":"1836"},
-                            {"name":"P5", "tagid":"1837"},
-                            {"name":"P6", "tagid":"1838"},
-                            {"name":"P7", "tagid":"1845"},
-                            {"name":"P8", "tagid":"1847"},
-                            {"name":"P9", "tagid":"1848"},
-                            {"name":"P10", "tagid":"1849"},
-                            {"name":"P11", "tagid":"1850"},
-                            {"name":"P12", "tagid":"1846"},
-                            {"name":"P13", "tagid":"1841"},
-                            {"name":"P14", "tagid":"1842"},
-                            {"name":"P15", "tagid":"1844"},
                             {"name":"Cooling RPM", "tagid":"1079"},
                             {"name":"Weather Station Temp", "tagid":"17230"},
                             {"name":"Weather Station RH", "tagid":"17229"},
@@ -104,29 +86,43 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                             {"name":"HD Platform RH", "tagid":"24397"},
                             {"name":"Furnace TC", "tagid":"27761"}]
     
+    # # Tagids for temp measurements, pressure, etc.
+    # attributes_tagids_sf1 = [{"name":"Pressure", "tagid":"27745"},   #1002
+    #                         {"name":"Vacuum", "tagid":"27716"},     #975
+    #                         {"name":"Active Power", "tagid":"6497"}, #3960
+    #                         {"name":"Apparent Power", "tagid":"6505"}, #3972
+    #                         {"name":"Active Energy Import", "tagid":"6465"}, # 6465, 4267  _panel_ehd3_/sinteringfurnace1/4_meter43204-4_meter43204/4_meter43204
+    #                         {"name":"Front Temperature", "tagid":"1840"},
+    #                         {"name":"Center Temperature", "tagid":"1839"},
+    #                         {"name":"Rear Temperature", "tagid":"1843"},
+    #                         {"name":"P1", "tagid":"1833"},
+    #                         {"name":"P2", "tagid":"1834"},
+    #                         {"name":"P3", "tagid":"1835"},
+    #                         {"name":"P4", "tagid":"1836"},
+    #                         {"name":"P5", "tagid":"1837"},
+    #                         {"name":"P6", "tagid":"1838"},
+    #                         {"name":"P7", "tagid":"1845"},
+    #                         {"name":"P8", "tagid":"1847"},
+    #                         {"name":"P9", "tagid":"1848"},
+    #                         {"name":"P10", "tagid":"1849"},
+    #                         {"name":"P11", "tagid":"1850"},
+    #                         {"name":"P12", "tagid":"1846"},
+    #                         {"name":"P13", "tagid":"1841"},
+    #                         {"name":"P14", "tagid":"1842"},
+    #                         {"name":"P15", "tagid":"1844"},
+    #                         {"name":"Cooling RPM", "tagid":"1079"},
+    #                         {"name":"Weather Station Temp", "tagid":"17230"},
+    #                         {"name":"Weather Station RH", "tagid":"17229"},
+    #                         {"name":"Weather Station Pressure", "tagid":"17226"},
+    #                         {"name":"HD Platform Temp", "tagid":"24399"},
+    #                         {"name":"HD Platform RH", "tagid":"24397"},
+    #                         {"name":"Furnace TC", "tagid":"27761"}]
+    
     attributes_tagids_sf2 = [{"name":"Pressure", "tagid":"3322"},
                             {"name":"Vacuum", "tagid":"25917"},
                             {"name":"Active Power", "tagid":"6606"},
                             {"name":"Apparent Power", "tagid":"6604"},
                             {"name":"Active Energy Import", "tagid":"6601"},
-                            {"name":"Front Temperature", "tagid":"1840"},
-                            {"name":"Center Temperature", "tagid":"1839"},
-                            {"name":"Rear Temperature", "tagid":"1843"},
-                            {"name":"P1", "tagid":"1833"},
-                            {"name":"P2", "tagid":"1834"},
-                            {"name":"P3", "tagid":"1835"},
-                            {"name":"P4", "tagid":"1836"},
-                            {"name":"P5", "tagid":"1837"},
-                            {"name":"P6", "tagid":"1838"},
-                            {"name":"P7", "tagid":"1845"},
-                            {"name":"P8", "tagid":"1847"},
-                            {"name":"P9", "tagid":"1848"},
-                            {"name":"P10", "tagid":"1849"},
-                            {"name":"P11", "tagid":"1850"},
-                            {"name":"P12", "tagid":"1846"},
-                            {"name":"P13", "tagid":"1841"},
-                            {"name":"P14", "tagid":"1842"},
-                            {"name":"P15", "tagid":"1844"},
                             {"name":"Cooling RPM", "tagid":"25866"},
                             {"name":"Weather Station Temp", "tagid":"17230"},
                             {"name":"Weather Station RH", "tagid":"17229"},
@@ -140,24 +136,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                             {"name":"Active Power", "tagid":"10386"},
                             {"name":"Apparent Power", "tagid":"10388"},      
                             {"name":"Active Energy Import", "tagid":"10391"},
-                            {"name":"Front Temperature", "tagid":"1840"},
-                            {"name":"Center Temperature", "tagid":"1839"},
-                            {"name":"Rear Temperature", "tagid":"1843"},
-                            {"name":"P1", "tagid":"1833"},
-                            {"name":"P2", "tagid":"1834"},
-                            {"name":"P3", "tagid":"1835"},
-                            {"name":"P4", "tagid":"1836"},
-                            {"name":"P5", "tagid":"1837"},
-                            {"name":"P6", "tagid":"1838"},
-                            {"name":"P7", "tagid":"1845"},
-                            {"name":"P8", "tagid":"1847"},
-                            {"name":"P9", "tagid":"1848"},
-                            {"name":"P10", "tagid":"1849"},
-                            {"name":"P11", "tagid":"1850"},
-                            {"name":"P12", "tagid":"1846"},
-                            {"name":"P13", "tagid":"1841"},
-                            {"name":"P14", "tagid":"1842"},
-                            {"name":"P15", "tagid":"1844"},
                             {"name":"Cooling RPM", "tagid":"29593"},
                             {"name":"Weather Station Temp", "tagid":"17230"},
                             {"name":"Weather Station RH", "tagid":"17229"},
@@ -171,24 +149,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                             {"name":"Active Power", "tagid":"6606"},        # Incorrect tag ID
                             {"name":"Apparent Power", "tagid":"6604"},      # Incorrect tag ID
                             {"name":"Active Energy Import", "tagid":"6601"},    # Incorrect tag ID
-                            {"name":"Front Temperature", "tagid":"1840"},
-                            {"name":"Center Temperature", "tagid":"1839"},
-                            {"name":"Rear Temperature", "tagid":"1843"},
-                            {"name":"P1", "tagid":"1833"},
-                            {"name":"P2", "tagid":"1834"},
-                            {"name":"P3", "tagid":"1835"},
-                            {"name":"P4", "tagid":"1836"},
-                            {"name":"P5", "tagid":"1837"},
-                            {"name":"P6", "tagid":"1838"},
-                            {"name":"P7", "tagid":"1845"},
-                            {"name":"P8", "tagid":"1847"},
-                            {"name":"P9", "tagid":"1848"},
-                            {"name":"P10", "tagid":"1849"},
-                            {"name":"P11", "tagid":"1850"},
-                            {"name":"P12", "tagid":"1846"},
-                            {"name":"P13", "tagid":"1841"},
-                            {"name":"P14", "tagid":"1842"},
-                            {"name":"P15", "tagid":"1844"},
                             {"name":"Cooling RPM", "tagid":"2817"},
                             {"name":"Weather Station Temp", "tagid":"17230"},
                             {"name":"Weather Station RH", "tagid":"17229"},
@@ -400,8 +360,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
 
     # Now determining where the end point of the run is
-    print('Startpoint: {}'.format(startpoint))
-    print('Length of onoffdata: {}'.format(len(onoffdata)))
     endpoint = [i for i in range(startpoint[-1],len(onoffdata)-1) if onoffdata[i][0] == 1 and onoffdata[i+1][0] == 0]
 
     # If the endpoint was not in the table, then get the next table and check for the endpoint in there
@@ -443,15 +401,13 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
     # Determining exact start and stop timestamps
     # In case there are multiple runs on the same day (test runs etc) Make the start point be the very first of the day, and end point is the very last? Might change
     starttime = onoffdata[startpoint[-1]][1]
-    stoptime = onoffdata[endpoint[-1]][1]
-    print(datetime.datetime.fromtimestamp(stoptime/1000))
-
+    stoptime = onoffdata[endpoint[0]][1]
 
 
     # Looking at the furnace temperature at the stoptime. If the temperature is above 75, then the stoptime will be the point when the temperature drops below 75
     # Getting the furnace temperature data from the tables
     try:
-        cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp < {} ORDER BY t_stamp DESC LIMIT 1".format(tables[-1],sf.getAllTags(attributes_tagids[-1]['tagid']),stoptime))
+        cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp < {} ORDER BY t_stamp DESC LIMIT 1".format(tables[-1],sf.getAllTags(attributes_tagids[11]['tagid']),stoptime))
         result = sf.makeArray(cur.fetchall())[0]
         furnace_temp = result[0]
     except:
@@ -463,7 +419,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         print('\n\n\nFurnace temperature is above 75 C at the end of the run. Looking for the point when the temperature drops below 75...')
 
         # Getting the first furnace temperature that is under 75 and past the stoptime
-        cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp > {} AND intvalue < {} ORDER BY t_stamp ASC LIMIT 1".format(tables[-1],sf.getAllTags(attributes_tagids[-1]['tagid']),stoptime,75))
+        cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp > {} AND intvalue < {} ORDER BY t_stamp ASC LIMIT 1".format(tables[-1],sf.getAllTags(attributes_tagids[11]['tagid']),stoptime,75))
 
         try:
             result = sf.makeArray(cur.fetchall())[0]
@@ -491,22 +447,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             nexttable = database + '.sqlt_data_1_' + nextday.strftime('%Y%m%d')
             tables.append(nexttable)
             currentday = nextday
-            print('Added table {}'.format(nexttable))
-        
-    
-
-    # If the batchID is B230367, then set the start time to be 2023-10-22 07:44:49 and stop time to be 2023-10-22 19:43:33
-    if batchid == 'B230367':
-        starttime = 1697978689000
-        stoptime = 1698021813000
-        # Setting the tables to be for 2023-10-21
-        starttable = 'SCADA_2023_10.sqlt_data_1_20231021'
-        nexttable = 'SCADA_2023_10.sqlt_data_1_20231022'
-        tables = [starttable, nexttable]
-    # If the batchID is B230368, then set the start time to be 2023-10-22 20:06:27 and stop time to be 2023-10-23 07:46:30
-    elif batchid == 'B230368':
-        starttime = 1698023187000
-        stoptime = 1698065190000
 
 
     # Printing the current run's start and stop times
@@ -929,30 +869,30 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
         # Creating arrays for specific attributes and their times
         # All of these arrays will be going into plots
-        maxlength = len(attributes[1]) - 12
-        coolingrpm = obscure([(x[1]*0.98333) for x in attributes[23][:maxlength]])
-        coolingrpmtimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[23][:maxlength]]
+        maxlength = len(attributes[1]) - 12 # Creating a maxlength variable, which will be used to shorten the lists of data to the same length
+        coolingrpm = obscure([(x[1]*0.98333) for x in attributes[5][:maxlength]])
+        coolingrpmtimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[5][:maxlength]]
         pressure = obscure([x[1] for x in attributes[0][:maxlength]])
         vacuum = obscure([x[1] for x in attributes[1][:maxlength]])
         activepower = obscure([x[1] for x in attributes[2][:maxlength]])
         apparentpower = obscure([x[1] for x in attributes[3][:maxlength]])
         energyimport = obscure([x[1] for x in attributes[4][:maxlength]])
-        tempsf = obscure([x[1] for x in attributes[5][:maxlength]],type='temperature')
-        tempsc = obscure([x[1] for x in attributes[6][:maxlength]],type='temperature')
-        tempsr = obscure([x[1] for x in attributes[7][:maxlength]],type='temperature')
+        # tempsf = obscure([x[1] for x in attributes[5][:maxlength]],type='temperature')
+        # tempsc = obscure([x[1] for x in attributes[6][:maxlength]],type='temperature')
+        # tempsr = obscure([x[1] for x in attributes[7][:maxlength]],type='temperature')
         pressuretime = [(x[2] - starttime)/3600000 for x in attributes[0][:maxlength]]
         vacuumtime = [(x[2] - starttime)/3600000 for x in attributes[1][:maxlength]]
         activepowertime = [(x[2] - starttime)/3600000 for x in attributes[2][:maxlength]]
         apparentpowertime = [(x[2] - starttime)/3600000 for x in attributes[3][:maxlength]]
         energyimporttime = [(x[2] - starttime)/3600000 for x in attributes[4][:maxlength]]
-        tempsftimes = [datetime.datetime.fromtimestamp(x[2]/1000) for x in attributes[5][:maxlength]]
-        tempsftimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[5][:maxlength]]
-        tempsctimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[6][:maxlength]]
-        tempsrtimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[7][:maxlength]]
-        blockdeltatimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[8][:maxlength]]
-        furnacetemperature = obscure([x[1] for x in attributes[29][:maxlength]],type='temperature')
-        furnacetemperaturetime = [(x[2] - starttime)/3600000 for x in attributes[29][:maxlength]]
-        furnacetcactualtime = [datetime.datetime.fromtimestamp(x[2]/1000) for x in attributes[29][:maxlength]]
+        # tempsftimes = [datetime.datetime.fromtimestamp(x[2]/1000) for x in attributes[5][:maxlength]]
+        # tempsftimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[5][:maxlength]]
+        # tempsctimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[6][:maxlength]]
+        # tempsrtimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[7][:maxlength]]
+        blockdeltatimeselapsed = [(x[2] - starttime)/3600000 for x in attributes[11][:maxlength]]
+        furnacetemperature = obscure([x[1] for x in attributes[11][:maxlength]],type='temperature')
+        furnacetemperaturetime = [(x[2] - starttime)/3600000 for x in attributes[11][:maxlength]]
+        furnacetcactualtime = [datetime.datetime.fromtimestamp(x[2]/1000) for x in attributes[11][:maxlength]]
 
         # Creating arrays of setpoint times and temperatures, and then obscuring them
         settimes,settemps = sf.expandSetpoints(currentsetpointlist,templocation=1,timelocation=2)
@@ -998,7 +938,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         global endspots
         avgrates = []
         endspots = []
-        # if len(tempsf) > 0:
+        # if reporttype == 'full':
         #     firsttemp = (tempsf[0] + tempsc[0] + tempsr[0]) / 3
         #     firsttime = tempsftimeselapsed[0]
         # else:
@@ -1008,16 +948,16 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
         # At the end of each step, calculate the change in temp, and divide by time to get average rate of change
         # Also determine where each step ends, and call it an endspot
-        # if len(tempsf) > 0:
+        # if reporttype == 'full':
         #     for element in currentsetpointlist[1:]:
 
         #         # Endspot is determined as the list index where the total elapsed time matches (or is close to matching) 
         #         # the elapsed time of all setpoints added up
-        #         endspot = bisect_left(tempsftimeselapsed,(element[2] + totaltime) / 60)
+        #         endspot = bisect_left(furnacetemperaturetime,(element[2] + totaltime) / 60)
 
         #         # Calculations for average rate, which is (change in temp) / (change in time)
         #         lasttemp = (tempsf[endspot-36] + tempsc[endspot-36] + tempsr[endspot-36]) / 3 
-        #         lasttime = tempsftimeselapsed[endspot-36] 
+        #         lasttime = furnacetemperaturetime[endspot-36] 
         #         tempdifference = lasttemp - firsttemp 
         #         timedifference = (lasttime - firsttime) * 60 
         #         rate = tempdifference/timedifference
@@ -1031,13 +971,13 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                 
         #         # Updating values to be used during the next iteration of the loop
         #         firsttemp = (tempsf[endspot+37] + tempsc[endspot+37] + tempsr[endspot+37]) / 3
-        #         firsttime = tempsftimeselapsed[endspot+37]
+        #         firsttime = furnacetemperaturetime[endspot+37]
         #         totaltime = totaltime + element[2]
 
         #         # Putting the endspot into the list of endspots
         #         endspots.append(endspot)
 
-        # If tempsf is empty, then use the furnace temperature instead
+        # # For all other types of reports, then use the furnace temperature instead
         # else:
         for element in currentsetpointlist[1:]:
             # Endspot is determined as the list index where the total elapsed time matches (or is close to matching) 
@@ -1095,20 +1035,30 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         cur.execute("SELECT id, experiment_id, thermocouple, x, y, z, furnace_id, time, cooling_type FROM eq_sintering_furnaces_datalogger WHERE experiment_id='{}'".format(experimentid))
         thermolocations = sf.makeArray(cur.fetchall())
 
-        
-        # If there are more than 15 thermocouple location results, then only use the ones with the same date as the run
-        if len(thermolocations) > 15:
-            thermolocations = [x for x in thermolocations if x[6] == (equipment_id-1)]
+        # Only using entries for the correct sintering furnace
+        thermolocations = [x for x in thermolocations if x[6] == (equipment_id-1)]
+
+        # If this is being used for a full report and there are no results, then state that and quit the program
+        if len(thermolocations) == 0 and reporttype == 'full':
+            print('No thermocouple data is linked to this run according to SCADA.eq_sintering_furnaces_datalogger.')
+            print('No report of this type will be made. Try making a single report instead.')
+            quit()
+
 
         for element in thermolocations:
             print(element)
 
-        # If any of the thermocouple numbers are not present in thermolocations, then make their entry in attributes be empty
-        for k in range(1,19):
-            if k not in [x[2] for x in thermolocations]:
-                # Making the corresponding entry in attributes be empty
-                print(k+4)
-                attributes[k+4] = [[],[],[]]
+        print('\n\n')
+
+        # # If any of the thermocouple numbers are not present in thermolocations, then make their entry in attributes be empty
+        # for k in range(1,19):
+        #     if k not in [x[2] for x in thermolocations]:
+        #         # Making the corresponding entry in attributes be empty
+        #         print(k+4)
+        #         if k <= 15:
+        #             attributes[k+4] = [[],[],[]]    # Probes 1-15
+        #         else:
+        #             attributes[k-11] = [[],[],[]]   # Probes 16-18 (F,C,R)
 
         # If any of the thermocouple numbers are not present in thermolocations, then remove the corresponding entry from probe_tagids
         for k in range(1,19):
@@ -1119,31 +1069,47 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                         del probe_tagids[i]
                         break
 
-        # If probe 16, 17, or 18 have a z value of zero, then change their names to be "P16 (Rear)", "P17 (Center)", or "P18 (Front)"
+        # # If probe 16, 17, or 18 have a z value of zero, then change their names to be "P16 (Rear)", "P17 (Center)", or "P18 (Front)"
+        # for element in thermolocations:
+        #     if element[2] == 16 and element[5] == 0:
+        #         for i in range(len(probe_tagids)):
+        #             if probe_tagids[i]["name"] == 'P16':
+        #                 probe_tagids[i]["name"] = 'P16 (Rear)'
+        #                 break
+        #     elif element[2] == 17 and element[5] == 0:
+        #         for i in range(len(probe_tagids)):
+        #             if probe_tagids[i]["name"] == 'P17':
+        #                 probe_tagids[i]["name"] = 'P17 (Center)'
+        #                 break
+        #     elif element[2] == 18 and element[5] == 0:
+        #         for i in range(len(probe_tagids)):
+        #             if probe_tagids[i]["name"] == 'P18':
+        #                 probe_tagids[i]["name"] = 'P18 (Front)'
+        #                 break
+
+        # If any of the probes have a z value of zero, then change their names to have (front), (center), or (rear)
         for element in thermolocations:
-            if element[2] == 16 and element[5] == 0:
+            if element[5] == 0:
                 for i in range(len(probe_tagids)):
-                    if probe_tagids[i]["name"] == 'P16':
-                        probe_tagids[i]["name"] = 'P16 (Rear)'
-                        break
-            elif element[2] == 17 and element[5] == 0:
-                for i in range(len(probe_tagids)):
-                    if probe_tagids[i]["name"] == 'P17':
-                        probe_tagids[i]["name"] = 'P17 (Center)'
-                        break
-            elif element[2] == 18 and element[5] == 0:
-                for i in range(len(probe_tagids)):
-                    if probe_tagids[i]["name"] == 'P18':
-                        probe_tagids[i]["name"] = 'P18 (Front)'
-                        break
+                    if int(probe_tagids[i]["name"][1:]) == int(element[2]):
+                        if element[4] == 16:
+                            probe_tagids[i]["name"] = probe_tagids[i]["name"] + ' (Rear)'
+                        elif element[4] == 17:
+                            probe_tagids[i]["name"] = probe_tagids[i]["name"] + ' (Center)'
+                        elif element[4] == 18:
+                            probe_tagids[i]["name"] = probe_tagids[i]["name"] + ' (Front)'
 
         # Getting data for each of the thermocouples that was used in the run
+        global tempsf
+        global tempsc
+        global tempsr
         global probedata
         probedata = []
         for element in probe_tagids:
 
             # Getting all tag IDs that are associated with the current element
             tagids = sf.getAllTags(element["tagid"])
+            print('Tag IDs: {}'.format(tagids))
 
             subarray = []
             for table in tables:
@@ -1151,9 +1117,18 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                 cur.execute("SELECT tagid, intvalue, floatvalue, stringvalue, datevalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp BETWEEN {} AND {} ORDER BY t_stamp ASC".format(table,tagids,starttime,stoptime))
                 array = sf.makeArray(cur.fetchall(),removeNone=True)
                 subarray = subarray + array
+                print('Length of subarray: {}'.format(len(subarray)))
 
             # Obscuring the temperature data
             subarray = [[x[0],x[1]*tempmultiplier,x[2]] for x in subarray]
+
+            # If this probe was used as a front, center, or rear reference thermocouple, then assign it its own variable
+            if ' (Rear)' in element["name"]:
+                tempsr = subarray
+            elif ' (Center)' in element["name"]:
+                tempsc = subarray
+            elif ' (Front)' in element["name"]:
+                tempsf = subarray
 
             probedata.append(subarray)
 
@@ -1255,7 +1230,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             array = []
 
             for probe in probedata:
-                temp = tempmultiplier*probe[k][1]
+                temp = probe[k][1]
                 array.append(temp)
             
             blockdeltas.append(sf.minmax(array))
@@ -1320,17 +1295,24 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                 fig, ax1 = sf.createPlot(x=[furnacetemperaturetime], y=[furnacetemperature], labels=['Furnace TC'], xlabel='Time Elapsed (Hours)', ylabel='Temperature (C)')
 
             else:
-                # Plotting actual temperature values
-                fig, ax1 = sf.createPlot(x=[[(x[2] - starttime)/3600000 for x in attributes[5][:maxlength]],
-                                            [(x[2] - starttime)/3600000 for x in attributes[6][:maxlength]],
-                                            [(x[2] - starttime)/3600000 for x in attributes[7][:maxlength]],
-                                            furnacetemperaturetime], 
-                                        y=[obscure([x[1] for x in attributes[5][:maxlength]],type='temperature'),
-                                            obscure([x[1] for x in attributes[6][:maxlength]],type='temperature'),
-                                            obscure([x[1] for x in attributes[7][:maxlength]],type='temperature'),
-                                            furnacetemperature], 
-                                            labels=['Front Temperature (P18)','Center Temperature (P17)','Rear Temperature (P16)','Furnace TC'],
-                                            xlabel='Time Elapsed (Hours)', ylabel='Temperature (C)')
+                # Plotting actual temperature values if they exist
+                try:
+                    # for k in range(5,8):
+                    #     if k in [x[2] for x in thermolocations]
+                    fig, ax1 = sf.createPlot(x=[[(x[2] - starttime)/3600000 for x in tempsf[:maxlength]],
+                                                [(x[2] - starttime)/3600000 for x in tempsc[:maxlength]],
+                                                [(x[2] - starttime)/3600000 for x in tempsr[:maxlength]],
+                                                furnacetemperaturetime], 
+                                            y=[[x[1] for x in tempsf[:maxlength]],
+                                                [x[1] for x in tempsc[:maxlength]],
+                                                [x[1] for x in tempsr[:maxlength]],
+                                                furnacetemperature], 
+                                                labels=['Front Temperature (P18)','Center Temperature (P17)','Rear Temperature (P16)','Furnace TC'],
+                                                xlabel='Time Elapsed (Hours)', ylabel='Temperature (C)')
+                except:
+                    # Just plotting the furnace thermocouple if unable to plot data from the F, C, R probes
+                    fig, ax1 = sf.createPlot(x=[furnacetemperaturetime], y=[furnacetemperature], labels=['Furnace TC'], xlabel='Time Elapsed (Hours)', ylabel='Temperature (C)')
+
 
             # Set grid to use minor tick locations. 
             ax1.grid(which = 'minor', linestyle=':')
@@ -1358,85 +1340,85 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
     def setpointVActualTemperatures(halfsize=False, xadjust=0, yadjust=0):
 
-        try:
-            # Plotting actual temp vs setpoint values
-            fig, ax1 = plt.subplots(figsize=(10,6))
-            ax1.grid(linestyle='--',linewidth=1.0)
-            minorLocator = MultipleLocator(1)
-            ax1.xaxis.set_minor_locator(minorLocator)
+        # try:
+        # Plotting actual temp vs setpoint values
+        fig, ax1 = plt.subplots(figsize=(10,6))
+        ax1.grid(linestyle='--',linewidth=1.0)
+        minorLocator = MultipleLocator(1)
+        ax1.xaxis.set_minor_locator(minorLocator)
 
-            # Set grid to use minor tick locations. 
-            ax1.grid(which = 'minor', linestyle=':')
-            ax1.plot(settimes,settemps,'k--', label = 'Setpoint Temperatures')
+        # Set grid to use minor tick locations. 
+        ax1.grid(which = 'minor', linestyle=':')
+        ax1.plot(settimes,settemps,'k--', label = 'Setpoint Temperatures')
 
-            # Plotting temperature from the thermocouple data if the report type isn't single
-            # if reporttype != 'single':
-            #     # Plotting temperature data from the probedata array, with the label being the thermocouple number
-            #     for probe in probedata:
+        # Plotting temperature from the thermocouple data if the report type is 'full'
+        if reporttype == 'full':
+            # Plotting temperature data from the probedata array, with the label being the thermocouple number
+            for probe in probedata:
 
-            #         # Creating a label for the thermocouple number by matching the tagid with the name in probe_tagids
-            #         for element in probe_tagids:
-            #             if element["tagid"] == str(probe[0][0]):
-            #                 label = str(element["name"])
-            #                 break
-            #             else:
-            #                 label = probe[0][0]
+                # Creating a label for the thermocouple number by matching the tagid with the name in probe_tagids
+                for element in probe_tagids:
+                    if element["tagid"] == str(probe[0][0]):
+                        label = str(element["name"])
+                        break
+                    else:
+                        label = probe[0][0]
 
-            #         # Plotting the temperature data
-            #         ax1.plot([(x[2] - starttime)/3600000 for x in probe],obscure([x[1] for x in probe],type='temperature'), label = label)
+                # Plotting the temperature data
+                ax1.plot([(x[2] - starttime)/3600000 for x in probe],[x[1] for x in probe], label = label)
 
-                # # If the front thermocouple data is available, then plot all 18 thermocouples
-                # if len(tempsf) > 0:
-                #     for k in range(5,23):
-                #         if k == 5:
-                #             label = 'Front Temperature (P18)'
-                #         elif k == 6:
-                #             label = 'Center Temperature (P17)'
-                #         elif k == 7:
-                #             label = 'Rear Temperature (P16)'
-                #         else:
-                #             label = 'P' + str(k-7)
-                #         ax1.plot([(x[2] - starttime)/3600000 for x in attributes[k]],obscure([x[1] for x in attributes[k]],type='temperature'),label = label)
+            # If the front thermocouple data is available, then plot all 18 thermocouples
+            # if len(tempsf) > 0:
+            #     for k in range(5,23):
+            #         if k == 5:
+            #             label = 'Front Temperature (P18)'
+            #         elif k == 6:
+            #             label = 'Center Temperature (P17)'
+            #         elif k == 7:
+            #             label = 'Rear Temperature (P16)'
+            #         else:
+            #             label = 'P' + str(k-7)
+            #         ax1.plot([(x[2] - starttime)/3600000 for x in attributes[k]],obscure([x[1] for x in attributes[k]],type='temperature'),label = label)
 
-            # Also plotting the temperature of the furnace thermocouple
-            ax1.plot(furnacetemperaturetime,obscure(furnacetemperature,type='temperature'),color='red',label='Furnace TC')
+        # Also plotting the temperature of the furnace thermocouple for all report types
+        ax1.plot(furnacetemperaturetime,obscure(furnacetemperature,type='temperature'),color='red',label='Furnace TC')
 
-            ax1.set_xlabel('Time Elapsed (Hours)',fontsize=font_size)
-            ax1.set_ylabel('Temperature (C)', fontsize=font_size)
+        ax1.set_xlabel('Time Elapsed (Hours)',fontsize=font_size)
+        ax1.set_ylabel('Temperature (C)', fontsize=font_size)
 
-            # Creating a secondary axis and plotting the vacuum levels on it
-            ax2 = ax1.twinx()
-            ax2.plot(vacuumtime,vacuum,'b',label='Vacuum')
-            ax2.set_ylabel('Vacuum (mbar)', fontsize=font_size)
-            # Changing the axis to log
-            ax2.set_yscale('log')
-            # Plotting empty line to create a legend for the vacuum
-            ax1.plot([],[],'b',label='Vacuum')
+        # Creating a secondary axis and plotting the vacuum levels on it
+        ax2 = ax1.twinx()
+        ax2.plot(vacuumtime,vacuum,'b',label='Vacuum')
+        ax2.set_ylabel('Vacuum (mbar)', fontsize=font_size)
+        # Changing the axis to log
+        ax2.set_yscale('log')
+        # Plotting empty line to create a legend for the vacuum
+        ax1.plot([],[],'b',label='Vacuum')
 
 
-            # Shrink current axis' height by 10% on the bottom
-            box = ax1.get_position()
-            ax1.set_position([box.x0, box.y0 + box.height * 0.1,
-                            box.width, box.height * 0.9])
+        # Shrink current axis' height by 10% on the bottom
+        box = ax1.get_position()
+        ax1.set_position([box.x0, box.y0 + box.height * 0.1,
+                        box.width, box.height * 0.9])
 
-            # Put a legend below current axis
-            legend = ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
-                    fancybox=True, shadow=True, ncol=5)
+        # Put a legend below current axis
+        legend = ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
+                fancybox=True, shadow=True, ncol=5)
 
-            plt.savefig(filepath + 'setpointvactual' + iteration + '.png',bbox_inches='tight')
-            ax1.clear()
-            plt.cla()
-            legend.remove()
+        plt.savefig(filepath + 'setpointvactual' + iteration + '.png',bbox_inches='tight')
+        ax1.clear()
+        plt.cla()
+        legend.remove()
 
-            # Add plot to PDF
-            sf.addPlot(pdf, 'Setpoint vs Actual Temperatures',filepath + 'setpointvactual' + iteration + '.png', halfsize=halfsize, xadjust=xadjust, yadjust=yadjust)
+        # Add plot to PDF
+        sf.addPlot(pdf, 'Setpoint vs Actual Temperatures',filepath + 'setpointvactual' + iteration + '.png', halfsize=halfsize, xadjust=xadjust, yadjust=yadjust)
 
-        except:
-            # Printing to the PDF that there was an error
-            sf.writeHeader(pdf,'Setpoint vs Actual Temperatures',halfsize=halfsize)
-            pdf.write(10,'Unable to create setpoint vs actual temperature plot.\n\n')
-            # Printing to the console
-            print('Unable to create setpoint vs actual temperature plot.\n')
+        # except:
+        #     # Printing to the PDF that there was an error
+        #     sf.writeHeader(pdf,'Setpoint vs Actual Temperatures',halfsize=halfsize)
+        #     pdf.write(10,'Unable to create setpoint vs actual temperature plot.\n\n')
+        #     # Printing to the console
+        #     print('Unable to create setpoint vs actual temperature plot.\n')
 
         
 
@@ -1733,104 +1715,104 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
     def minMaxDeltaTemps():
 
-        try:
-            # Getting a list of endspots if it does not currently exist
-            getEndspots()
+        # try:
+        # Getting a list of endspots if it does not currently exist
+        getEndspots()
 
-            # Finding the temperature range of just the 15 thermocouples in blocks
-            # Returns array full of triples that contain (delta temperature,hottest thermocouple,coolest thermocouple) for all temperature measurements
-            getBlockDeltas()
+        # Finding the temperature range of just the 15 thermocouples in blocks
+        # Returns array full of triples that contain (delta temperature,hottest thermocouple,coolest thermocouple) for all temperature measurements
+        getBlockDeltas()
 
-            # Create arrays for delta block temperatures throughout each setpoint step
-            startpoint = 0
-            stepdeltas = []
+        # Create arrays for delta block temperatures throughout each setpoint step
+        startpoint = 0
+        stepdeltas = []
 
-            for element in endspots:
-                array = []
-                for item in blockdeltas[startpoint:element]:
-                    array.append(item)
+        for element in endspots:
+            array = []
+            for item in blockdeltas[startpoint:element]:
+                array.append(item)
 
-                startpoint = element
-                stepdeltas.append(array)
-
-
-            # Finding largest and smallest delta temperature points within each step
-            def sort_key(deltapoint):
-                return deltapoint[0]
-
-            minmaxdeltas = []
-            for element in stepdeltas:
-                if len(element) > 0:
-                    least = min(element,key = sort_key)
-                    most = max(element,key = sort_key)
-                    minmaxdeltas.append([least,most])
-
-            # Creating list with minimum and maximum delta temperatures between blocks at each step
-            k = 1
-            minmaxdfinfo = []
-
-            for element in minmaxdeltas:
-
-                # Finding the two thermocouples that correspond to delta min
-                for item in probe_tagids:
-
-                    if str(item["tagid"]) == str(probedata[element[0][1]][0][0]):
-                        mina = item["name"][1:]
-                        break
-
-                for item in probe_tagids:
-                    if str(item["tagid"]) == str(probedata[element[0][2]][0][0]):
-                        minb = item["name"][1:]
-                        break
-
-                # Finding the two thermocouples that correspond to delta max
-                for item in probe_tagids:
-                    if str(item["tagid"]) == str(probedata[element[1][1]][0][0]):
-                        maxa = item["name"][1:]
-                        break
-
-                for item in probe_tagids:
-                    if str(item["tagid"]) == str(probedata[element[1][2]][0][0]):
-                        maxb = item["name"][1:]
-                        break
-
-                # Appending the information to minmaxdfinfo
-                minmaxdfinfo.append([str(k),sf.twoDecimals(element[0][0]), mina + '-' + minb, sf.twoDecimals(element[1][0]),maxa + '-' + maxb])
-                k = k + 1
+            startpoint = element
+            stepdeltas.append(array)
 
 
-            # For each step in minmaxdfinfo, inserting the temperature setpoint
-            for k in range(len(minmaxdfinfo)):
-                minmaxdfinfo[k].insert(1,setpointlist[k+1][1])
+        # Finding largest and smallest delta temperature points within each step
+        def sort_key(deltapoint):
+            return deltapoint[0]
 
-                # Then, inserting whether the setpoint went up, down, or held constant since the last setpoint
-                # For the first step, just say it went up
-                if k == 0:
+        minmaxdeltas = []
+        for element in stepdeltas:
+            if len(element) > 0:
+                least = min(element,key = sort_key)
+                most = max(element,key = sort_key)
+                minmaxdeltas.append([least,most])
+
+        # Creating list with minimum and maximum delta temperatures between blocks at each step
+        k = 1
+        minmaxdfinfo = []
+
+        for element in minmaxdeltas:
+
+            # Finding the two thermocouples that correspond to delta min
+            for item in probe_tagids:
+
+                if str(item["tagid"]) == str(probedata[element[0][1]][0][0]):
+                    mina = item["name"][1:]
+                    break
+
+            for item in probe_tagids:
+                if str(item["tagid"]) == str(probedata[element[0][2]][0][0]):
+                    minb = item["name"][1:]
+                    break
+
+            # Finding the two thermocouples that correspond to delta max
+            for item in probe_tagids:
+                if str(item["tagid"]) == str(probedata[element[1][1]][0][0]):
+                    maxa = item["name"][1:]
+                    break
+
+            for item in probe_tagids:
+                if str(item["tagid"]) == str(probedata[element[1][2]][0][0]):
+                    maxb = item["name"][1:]
+                    break
+
+            # Appending the information to minmaxdfinfo
+            minmaxdfinfo.append([str(k),sf.twoDecimals(element[0][0]), mina + '-' + minb, sf.twoDecimals(element[1][0]),maxa + '-' + maxb])
+            k = k + 1
+
+
+        # For each step in minmaxdfinfo, inserting the temperature setpoint
+        for k in range(len(minmaxdfinfo)):
+            minmaxdfinfo[k].insert(1,setpointlist[k+1][1])
+
+            # Then, inserting whether the setpoint went up, down, or held constant since the last setpoint
+            # For the first step, just say it went up
+            if k == 0:
+                minmaxdfinfo[k].insert(2,'Up')
+            else:
+                if currentsetpointlist[k+1][1] > currentsetpointlist[k][1]:
                     minmaxdfinfo[k].insert(2,'Up')
+                elif currentsetpointlist[k+1][1] < currentsetpointlist[k][1]:
+                    minmaxdfinfo[k].insert(2,'Down')
                 else:
-                    if currentsetpointlist[k+1][1] > currentsetpointlist[k][1]:
-                        minmaxdfinfo[k].insert(2,'Up')
-                    elif currentsetpointlist[k+1][1] < currentsetpointlist[k][1]:
-                        minmaxdfinfo[k].insert(2,'Down')
-                    else:
-                        minmaxdfinfo[k].insert(2,'Hold')
+                    minmaxdfinfo[k].insert(2,'Hold')
 
 
-            # Creating header for the section
-            sf.writeHeader(pdf, 'Minimum and Maximum Delta Temperatures Between Blocks')
+        # Creating header for the section
+        sf.writeHeader(pdf, 'Minimum and Maximum Delta Temperatures Between Blocks')
 
-            # Making a list of column names to be used in the table
-            pdf.set_font('Helvetica','',8.5)
-            columnnames = ['Step     ','Temp     ','Type      ','Delta Min','Min Probe','Delta Max','Max Probe']
-            sf.makeTable(pdf, columnnames,minmaxdfinfo,labelwidth=13,datawidth=13, titlewrap=1, fontsize=9)
+        # Making a list of column names to be used in the table
+        pdf.set_font('Helvetica','',8.5)
+        columnnames = ['Step     ','Temp     ','Type      ','Delta Min','Min Probe','Delta Max','Max Probe']
+        sf.makeTable(pdf, columnnames,minmaxdfinfo,labelwidth=13,datawidth=13, titlewrap=1, fontsize=9)
 
 
-        except:
-            # Printing to the PDF that there was an error
-            sf.writeHeader(pdf,'Minimum and Maximum Delta Temperatures Between Blocks')
-            pdf.write(10,'Unable to create minimum and maximum delta temperatures between blocks table.\n\n')
-            # Printing to the console
-            print('Unable to create minimum and maximum delta temperatures between blocks table.\n')
+        # except:
+        #     # Printing to the PDF that there was an error
+        #     sf.writeHeader(pdf,'Minimum and Maximum Delta Temperatures Between Blocks')
+        #     pdf.write(10,'Unable to create minimum and maximum delta temperatures between blocks table.\n\n')
+        #     # Printing to the console
+        #     print('Unable to create minimum and maximum delta temperatures between blocks table.\n')
 
 
     ###################################################
@@ -2477,8 +2459,8 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             avgprediction, coldprediction, hotprediction = sf.predict(avgftemps)
 
             # Plotting furnace temperature and vacuum
-            fig, ax1 = sf.createPlot(x=[tempsftimeselapsed,tempsctimeselapsed,tempsrtimeselapsed,tempsftimeselapsed,tempsftimeselapsed,tempsftimeselapsed],
-                                    y=[tempsf,tempsc,tempsr,avgprediction,hotprediction,coldprediction], labels=['Front Temperature (P18)','Center Temperature (P17)','Rear Temperature (P16)',
+            fig, ax1 = sf.createPlot(x=[furnacetemperaturetime,furnacetemperaturetime,furnacetemperaturetime,furnacetemperaturetime],
+                                    y=[avgftemps,avgprediction,hotprediction,coldprediction], labels=['Average Furnace Temp',
                                     'Predicted Average Block Temp','Predicted Hottest Block Temp','Predicted Coolest Block Temp'], xlabel='Time Elapsed (Hours)', ylabel='Temperature (C)')
 
             # Set grid to use minor tick locations. 
@@ -2490,7 +2472,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             ax2.set_ylabel('Vacuum (mbar)',fontsize=font_size)
             plt.yscale("log")
             legend = fig.legend(loc='upper center', bbox_to_anchor=(0.5, 0),
-                    fancybox=True, shadow=True, ncol=4)
+                    fancybox=True, shadow=True, ncol=3)
 
             plt.savefig(filepath + 'temperatureandvacuum' + iteration + '.png',bbox_inches='tight')
             ax1.clear()
@@ -2937,7 +2919,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         pdf.add_page()
         pdf.set_font('Helvetica', 'b', 20)  
         pdf.ln(5)
-        pdf.write(5, 'Sintering Furnace Report')
+        pdf.write(5, 'Sintering Furnace Report Full')
         pdf.ln(10)
         
         # Add date of report
