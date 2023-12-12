@@ -381,7 +381,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         # Finding the table associated with the next day
         nexttable = database + '.sqlt_data_1_' + nextday.strftime('%Y%m%d')
         tables.append(nexttable)
-        print(tables)
 
         # Getting tag 5872 data from next table
         cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({})".format(nexttable,onoff))
@@ -423,11 +422,9 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
         try:
             result = sf.makeArray(cur.fetchall())[0]
-            print(result)
             furnace_temp = result[0]
             stoptime = result[1]
             print('New stoptime: {}'.format(datetime.datetime.fromtimestamp(stoptime/1000)))
-            print(tables)
         except:
             print('All furnace temps in this table after the stoptime are above 75. Will check the next table')
 
@@ -1045,9 +1042,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             quit()
 
 
-        for element in thermolocations:
-            print(element)
-
         print('\n\n')
 
         # # If any of the thermocouple numbers are not present in thermolocations, then make their entry in attributes be empty
@@ -1109,7 +1103,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
             # Getting all tag IDs that are associated with the current element
             tagids = sf.getAllTags(element["tagid"])
-            print('Tag IDs: {}'.format(tagids))
 
             subarray = []
             for table in tables:
@@ -1117,7 +1110,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                 cur.execute("SELECT tagid, intvalue, floatvalue, stringvalue, datevalue, t_stamp FROM {} WHERE tagid IN ({}) AND t_stamp BETWEEN {} AND {} ORDER BY t_stamp ASC".format(table,tagids,starttime,stoptime))
                 array = sf.makeArray(cur.fetchall(),removeNone=True)
                 subarray = subarray + array
-                print('Length of subarray: {}'.format(len(subarray)))
 
             # Obscuring the temperature data
             subarray = [[x[0],x[1]*tempmultiplier,x[2]] for x in subarray]
@@ -1626,10 +1618,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         newsettimes,newsettemps = sf.expandSetpoints(newsetpoints,templocation=1,timelocation=2)
         newsettimes6,newsettemps6 = sf.expandSetpoints(newsetpoints6, templocation=1, timelocation=2)
         newsettimes5, newsettemps5 = sf.expandSetpoints(newsetpoints5, templocation=1, timelocation=2)
-
-        # Printing out the temperature setpoints
-        for k in range(len(currentsetpointlist)):
-            print(currentsetpointlist[k])
 
         # Doing the same thing but in plotly and then saving as html
         print('Creating setpoint vs actual temperature plot in plotly')
@@ -2211,7 +2199,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                 dfindex = []
                 for k in range(len(deltas)):
                     dfindex.append('Step ' + str(k+1))
-                    print(deltas[k])
 
                 # Plotting delta temperature values (scatter plot)
                 fig, ax1 = plt.subplots(figsize=(10,6))
