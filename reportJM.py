@@ -199,6 +199,9 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
     else:
         database = 'SCADA_' + year + '_' + month
 
+    # Changing to match the new database name
+    # database = 'SCADA_History'
+
     # Getting a starting table from the date in firstrun
     starttable = database + '.sqlt_data_1_' + datetime.datetime.strftime(firstrun[7], "%Y%m%d")
     tables = [starttable]

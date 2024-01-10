@@ -207,6 +207,9 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
     else:
         database = 'SCADA_' + year + '_' + month
 
+    # Changing to match the new database name
+    # database = 'SCADA_History'
+
     print('Starting time is: {}'.format(runinfo[7]))
 
         

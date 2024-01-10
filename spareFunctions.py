@@ -482,7 +482,7 @@ halfunderline = '__________________________________'
 def getAllTags(tagid):
 
     # First getting the tagpath of the input tagid
-    cur.execute("SELECT tagpath FROM sqlth_te WHERE id = {}".format(tagid))
+    cur.execute("SELECT tagpath FROM sqlth_te WHERE id = '{}'".format(tagid))
     tagpath = makeArray(cur.fetchall())[0][0]
 
     # Then searching through the sqlth_te table to find all tagids that have the same tagpath

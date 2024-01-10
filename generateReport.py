@@ -393,6 +393,24 @@ def addBHLoop(batchids):
         print('No BH Loop image found for batch ID ' + str(batchids[0][3]) + '.\n')
 
 
+# correct function which calculates the number of lines inside multicell
+def get_num_of_lines_in_multicell(pdf, message, CELL_WIDTH):
+    # divide the string in words
+    words = message.split(" ")
+    line = ""
+    n = 1
+    for word in words:
+        line += word + " "
+        line_width = pdf.get_string_width(line)
+        # In the next if it is necessary subtract 1 from the WIDTH
+        if line_width > CELL_WIDTH - 1:
+            # the multi_cell() insert a line break
+            n += 1
+            # reset of the string
+            line = word + " "
+    return n
+
+
 # Getting material production and traceability information
 def traceability(batchids, type):
 
@@ -412,10 +430,17 @@ def traceability(batchids, type):
 
     # Creating the visual traceability table
     for j in range(len(batchids)):
+
         k = len(batchids)-j-1
-        pdf.set_xy(pdf.l_margin + j*24, ybefore + 10)
-        pdf.multi_cell(24,3,'\n\n' + batchids[k][3] + '\n' + batchids[k][4] + '\n' + batchids[k][1] + '\n' + batchids[k][5][1] + '\n\n', 
-                    border='L', fill=True, align='L')
+        pdf.set_xy(pdf.l_margin + j*16, ybefore + 10)
+
+        # Creating the string that will be printed in the cell, based on number of lines needed for the process
+        if get_num_of_lines_in_multicell(pdf, batchids[k][1], 16) == 1:
+            cellstring = '\n\n' + batchids[k][3] + '\n' + batchids[k][4] + '\n' + batchids[k][1] + '\n\n' + batchids[k][5][1] + '\n\n'
+        else:
+            cellstring = '\n\n' + batchids[k][3] + '\n' + batchids[k][4] + '\n' + batchids[k][1] + '\n' + batchids[k][5][1] + '\n\n'
+
+        pdf.multi_cell(16,3,cellstring, border='L', fill=True, align='L')
         
     # Setting the line width and color back to default for the rest of the PDF
     pdf.set_line_width(0.2)
@@ -448,17 +473,10 @@ def traceability(batchids, type):
             # First determining how many lines high the row will be, based on number of operators
             operators = element[8].split(', ')
             rowheight = len(operators) * 5
+            # If printing the description will take up more lines than the operators, then use the description instead
+            if get_num_of_lines_in_multicell(pdf, element[7], 33)*5 > rowheight:
+                rowheight = get_num_of_lines_in_multicell(pdf, element[7], 33)*5
 
-            # Determining how many lines will be needed to fit the description
-            description = element[7]
-            descriptionlines = 1
-            while len(description) > 21:
-                descriptionlines += 1
-                description = description[21:]
-            descriptionheight = descriptionlines * 5
-
-            if descriptionheight > rowheight:
-                rowheight = descriptionheight
 
             for j in range(len(element[:9])):
 
@@ -778,6 +796,27 @@ def overallCompositions(batchids):
         # Adding the batch number and ICP results to allicp
         allicp.append([batch, icp])
 
+    # Breaking allicp up into multiple sections if more than 19 columns are needed in the table
+    # The first section will contain the first 19 columns, the second section will contain the next 19 columns, etc.
+    numcols = 0
+    allicpsections = []
+    for k in range(len(allicp)):
+        # If all of the columns can fit, then add all of them to the list
+        if numcols + len(allicp[k][1]) < 19:
+            allicpsections.append(allicp[k])
+            numcols += len(allicp[k][1])
+        # Otherwise, only add as many columns as will fit (for a total of 19)
+        else:
+            allicpsections.append([allicp[k][0], allicp[k][1][:19-numcols]])
+            # Then adding the rest of that section to a temporary list
+            temp = []
+            for i in range(19-numcols, len(allicp[k][1])):
+                temp.append([allicp[k][0],allicp[k][1][i]])
+            break
+
+    allicpsections.append
+            
+
 
     def addICPTable(pdf, allicp):
         # Adding the ICP and elemental analysis to the pdf
@@ -791,14 +830,40 @@ def overallCompositions(batchids):
         # Creating the table header
         pdf.cell(14, 5, 'Element', 1, fill=True)
 
+        # The number of columns in the table should not exceed 20. If there are more than 20 columns, 
+        # then the table will be split into multiple tables
+        numcols = 0
+        lastnumcols = 0
+
         # Writing the batch number as the column header
         for item in allicp:
-            if len(item[1]) > 1:
-                pdf.cell(9*len(item[1]), 5, item[0], 1, 0, 'C', fill=True)
-            elif len(item[1]) == 1:
-                pdf.cell(18, 5, item[0], 1, 0, 'C', fill=True)
+
+            # Updating the number of total columns
+            lastnumcols = numcols
+            numcols += len(item[1])
+
+            # If the total number of columns is less than 20, then write the batch number as the column header
+            if numcols < 20:
+                if len(item[1]) > 1:
+                    pdf.cell(9*len(item[1]), 5, item[0], 1, 0, 'C', fill=True)
+                elif len(item[1]) == 1:
+                    pdf.cell(18, 5, item[0], 1, 0, 'C', fill=True)
+                    # Adding an extra column to numcolums since this one is twice as wide
+                    numcols += 1
+
+            # If the total number of columns is greater than 20, then make the cell only as large as the remaining columns to 19
+            elif numcols >= 20:
+                if len(item[1]) > 1:
+                    pdf.cell(9*(20-lastnumcols), 5, item[0], 1, 0, 'C', fill=True)
+                elif len(item[1]) == 1:
+                    pdf.cell(18, 5, item[0], 1, 0, 'C', fill=True)
+                break
+
+
+
 
         # A second row will be added to the table that shows the process for each batch
+        # The same number of columns as the first row will be added
         pdf.set_xy(pdf.l_margin, pdf.get_y() + 5)
         pdf.cell(14, 5, '', 1, fill=True)
         for item in allicp:
@@ -807,8 +872,10 @@ def overallCompositions(batchids):
             for i in range(len(batchids)):
                 if item[0] == batchids[i][3]:
                     process = batchids[i][1]
+            # Making the cell holding the process name be the same width as all columns for that batch
             if len(item[1]) > 1:
                 pdf.cell(9*len(item[1]), 5, process, 1, 0, 'C', fill=True)
+            # If there is only one column for a process, then make it twice as wide so column headers fit
             elif len(item[1]) == 1:
                 if process == 'Material Received':
                     process = 'Material Rec'
@@ -1776,4 +1843,4 @@ def createReport(batchid, type, multiply=False):
 
 
 # Creating a report
-createReport(batchid='B230028', type='full', multiply=False)
+createReport(batchid='B230448', type='comprehensive', multiply=False)

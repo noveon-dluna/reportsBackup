@@ -17,6 +17,7 @@ from fpdf import FPDF
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.io as pio
+import sys
 
 
 # Creating a PDF class with a footer that has the page numbers
@@ -236,6 +237,9 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         database = 'SCADA_' + year
     else:
         database = 'SCADA_' + year + '_' + month
+
+    # Changing to match the new database name
+    # database = 'SCADA_History'
 
     # Generating name of the first table to be looked at, based off of timestamp associated with batch ID input
     # If the start time is before 7:47 AM, then the table will be the previous day's table. Otherwise it is the same day's table
@@ -1012,6 +1016,12 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
 
     def tcpositions():
 
+        global tempsf
+        global tempsc
+        global tempsr
+        global probedata
+        probedata = []
+
         # Finding run information from eq_sintering_furnaces based on batch ID, 
         # then using that to get all info from eq_sintering_furnaces_datalogger
         cur.execute("SELECT experiment_id, max_x, max_y, max_z FROM eq_sintering_furnaces WHERE batch_id='{}'".format(batchid))
@@ -1035,25 +1045,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         # Only using entries for the correct sintering furnace
         thermolocations = [x for x in thermolocations if x[6] == (equipment_id-1)]
 
-        # If this is being used for a full report and there are no results, then state that and quit the program
-        if len(thermolocations) == 0 and reporttype == 'full':
-            print('No thermocouple data is linked to this run according to SCADA.eq_sintering_furnaces_datalogger.')
-            print('No report of this type will be made. Try making a single report instead.')
-            quit()
-
-
-        print('\n\n')
-
-        # # If any of the thermocouple numbers are not present in thermolocations, then make their entry in attributes be empty
-        # for k in range(1,19):
-        #     if k not in [x[2] for x in thermolocations]:
-        #         # Making the corresponding entry in attributes be empty
-        #         print(k+4)
-        #         if k <= 15:
-        #             attributes[k+4] = [[],[],[]]    # Probes 1-15
-        #         else:
-        #             attributes[k-11] = [[],[],[]]   # Probes 16-18 (F,C,R)
-
         # If any of the thermocouple numbers are not present in thermolocations, then remove the corresponding entry from probe_tagids
         for k in range(1,19):
             if k not in [x[2] for x in thermolocations]:
@@ -1063,23 +1054,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                         del probe_tagids[i]
                         break
 
-        # # If probe 16, 17, or 18 have a z value of zero, then change their names to be "P16 (Rear)", "P17 (Center)", or "P18 (Front)"
-        # for element in thermolocations:
-        #     if element[2] == 16 and element[5] == 0:
-        #         for i in range(len(probe_tagids)):
-        #             if probe_tagids[i]["name"] == 'P16':
-        #                 probe_tagids[i]["name"] = 'P16 (Rear)'
-        #                 break
-        #     elif element[2] == 17 and element[5] == 0:
-        #         for i in range(len(probe_tagids)):
-        #             if probe_tagids[i]["name"] == 'P17':
-        #                 probe_tagids[i]["name"] = 'P17 (Center)'
-        #                 break
-        #     elif element[2] == 18 and element[5] == 0:
-        #         for i in range(len(probe_tagids)):
-        #             if probe_tagids[i]["name"] == 'P18':
-        #                 probe_tagids[i]["name"] = 'P18 (Front)'
-        #                 break
 
         # If any of the probes have a z value of zero, then change their names to have (front), (center), or (rear)
         for element in thermolocations:
@@ -1094,11 +1068,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                             probe_tagids[i]["name"] = probe_tagids[i]["name"] + ' (Front)'
 
         # Getting data for each of the thermocouples that was used in the run
-        global tempsf
-        global tempsc
-        global tempsr
-        global probedata
-        probedata = []
+        
         for element in probe_tagids:
 
             # Getting all tag IDs that are associated with the current element
@@ -1123,6 +1093,13 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
                 tempsf = subarray
 
             probedata.append(subarray)
+
+        # If nothing was added to the probedata list, then quit
+        print(len(probedata))
+        print('\n\n\n')
+        if len(probedata) == 0:
+            print('No temperature probes were used in this run. Try making a single report instead')
+            quit()
 
 
         # Creating array filled with locations
@@ -2965,7 +2942,7 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         except:
             print('\nUnable to create TC positions section.') 
             print('Either there were none, or else there were too many listed and none were from the day of the furnace run.\n')
-            pass
+            raise SystemExit()
 
         pdf.add_page()
 
