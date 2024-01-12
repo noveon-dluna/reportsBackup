@@ -322,12 +322,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         year = previousday.strftime('%Y')
         month = previousday.strftime('%m')
 
-        # If the previous day is before the cutoff date, then change the database name to the appropriate year
-        if previousday.strftime("%Y-%m-%d") <= cutoffdate:
-            database = 'SCADA_' + year
-        else:
-            database = 'SCADA_' + year + '_' + month
-
         # Finding the table associated with the previous day
         previoustable = database + '.sqlt_data_1_' + previousday.strftime('%Y%m%d')
         tables = [previoustable]
@@ -362,12 +356,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         nextday = currentday + datetime.timedelta(days=1)
         year = nextday.strftime('%Y')
         month = nextday.strftime('%m')
-
-        # If the next day is before the cutoff date, then change the database name to the appropriate year
-        if nextday.strftime("%Y-%m-%d") <= cutoffdate:
-            database = 'SCADA_' + year
-        else:
-            database = 'SCADA_' + year + '_' + month
 
         # Finding the table associated with the next day
         nexttable = database + '.sqlt_data_1_' + nextday.strftime('%Y%m%d')
@@ -424,12 +412,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             year = nextday.strftime('%Y')
             month = nextday.strftime('%m')
 
-            # If the next day is before the cutoff date, then change the database name to the appropriate year
-            if nextday.strftime("%Y-%m-%d") <= cutoffdate:
-                database = 'SCADA_' + year
-            else:
-                database = 'SCADA_' + year + '_' + month
-
             # Finding the table associated with the next day
             nexttable = database + '.sqlt_data_1_' + nextday.strftime('%Y%m%d')
             tables.append(nexttable)
@@ -468,12 +450,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
         previousday = currentday - datetime.timedelta(days=j)
         year = previousday.strftime('%Y')
         month = previousday.strftime('%m')
-
-        # If the previous day is before the cutoff date, then change the database name to the appropriate year
-        if previousday.strftime("%Y-%m-%d") <= cutoffdate:
-            database = 'SCADA_' + year
-        else:
-            database = 'SCADA_' + year + '_' + month
 
         # Finding the table associated with the previous day
         previoustable = database + '.sqlt_data_1_' + previousday.strftime('%Y%m%d')
