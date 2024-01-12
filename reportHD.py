@@ -195,20 +195,9 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
     runinfo.append(results[1] + ' (' + results[0] + ')')    # Combining the nvn_eq_id and name into one entry
     runinfo.append(results[2])                            # Adding the process_id to the runinfo array
 
-    # Determining what date the batch was run in, in the format of YYYY-MM-DD
-    day = runinfo[7].strftime("%Y-%m-%d")
-    month = day[5:7]
-    year = day[0:4]
-
-
-    # If the day is on or before the cutoff date, then change the database name to the appropriate year
-    if day <= cutoffdate:
-        database = 'SCADA_' + year
-    else:
-        database = 'SCADA_' + year + '_' + month
 
     # Changing to match the new database name
-    # database = 'SCADA_History'
+    database = 'SCADA_History'
 
     print('Starting time is: {}'.format(runinfo[7]))
 

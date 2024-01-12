@@ -3,6 +3,7 @@
 #################################
 
 import matplotlib.pyplot as plt
+import math
 import spareFunctions as sf
 import reportSF as rsf
 import reportJM as rjm
@@ -36,34 +37,6 @@ pdf = rsf.PDF()
 ###########################
 
 filepath = 'C:/Users/dluna/Desktop/pythonProjects/sfReports/graphs/'
-
-
-###############
-# User Inputs #
-###############
-
-# These are all arguments that get passed in when the script is run in the command line
-# An example of how to run this script is:
-# python3 comprehensive.py B230028 comprehensive multiply
-
-# # Total arguments
-# n = len(sys.argv)
-
-# # Arguments passed
-# for i in range(n):
-#     print('Argument {}: {}'.format(i+1,sys.argv[i]))
-
-# # Getting the batch ID
-# batchid = sys.argv[1]
-
-# # Getting the type of report
-# type = sys.argv[2]
-
-# # Getting the multiplier
-# if len(sys.argv) > 3:
-#     multiply = True
-# else:
-#     multiply = False
 
 
 #####################
@@ -720,37 +693,37 @@ def overallCompositions(batchids):
             item.append(avgeaConcentrations)
 
 
-        # If the date of the elemental analysis is the same as the date of the ICP, then the results should be combined
+        # If the date of the elemental analysis is the same as the date of the ICP, then the results should be combined. If not, the EA results should be 0
         for element in icp:
             # Creating a temporary list to hold all EA results for the same date
             temp = []
 
-            for item in elementanalyzer:
+            for item1 in elementanalyzer:
                 # Checking to see if the dates are the same
-                if item[3] == element[3] and item[2] == element[2]:
+                if item1[3] == element[3] and item1[2] == element[2]:
 
                     # Adding the elemental analysis results to the temporary list
-                    temp.append(item[4])
+                    temp.append(item1[4])
 
 
-                # Finding the average O, N, H, C, and S values for the entries in temp
-                onhcs = ['O', 'N', 'H', 'C', 'S']
-                subarray = []
-                for i in range(len(onhcs)):
-                    total = 0
-                    for j in range(len(temp)):
-                        for k in range(len(temp[j])):
-                            if temp[j][k][0] == onhcs[i]:
-                                total += temp[j][k][1]
+                    # Finding the average O, N, H, C, and S values for the entries in temp
+                    onhcs = ['O', 'N', 'H', 'C', 'S']
+                    subarray = []
+                    for i in range(len(onhcs)):
+                        total = 0
+                        for j in range(len(temp)):
+                            for k in range(len(temp[j])):
+                                if temp[j][k][0] == onhcs[i]:
+                                    total += temp[j][k][1]
+                            try:
+                                average = round(total / len(temp), 5)
+                            except:
+                                average = 0
+
                         try:
-                            average = round(total / len(temp), 5)
+                            subarray.append([onhcs[i], average])
                         except:
-                            average = 0
-
-                    try:
-                        subarray.append([onhcs[i], average])
-                    except:
-                        subarray.append([onhcs[i], 0])
+                            subarray.append([onhcs[i], 0])
 
             # Adding the average to the ICP results
             try:
@@ -792,6 +765,7 @@ def overallCompositions(batchids):
 
             # Adding a total to the end of the list
             item[4].append(['Total', round(normalizedtotal,1)])
+            print(item[4][-2:])
 
         # Adding the batch number and ICP results to allicp
         allicp.append([batch, icp])
@@ -800,22 +774,46 @@ def overallCompositions(batchids):
     # The first section will contain the first 19 columns, the second section will contain the next 19 columns, etc.
     numcols = 0
     allicpsections = []
+    temp = []
     for k in range(len(allicp)):
         # If all of the columns can fit, then add all of them to the list
-        if numcols + len(allicp[k][1]) < 19:
-            allicpsections.append(allicp[k])
+        if numcols + len(allicp[k][1]) <= 19:
+            temp.append(allicp[k])
             numcols += len(allicp[k][1])
+            # If the total number of columns is 19, then add the section to the list of sections
+            if numcols == 19:
+                allicpsections.append(temp)
+                temp = []
+                numcols = 0
         # Otherwise, only add as many columns as will fit (for a total of 19)
         else:
-            allicpsections.append([allicp[k][0], allicp[k][1][:19-numcols]])
-            # Then adding the rest of that section to a temporary list
-            temp = []
-            for i in range(19-numcols, len(allicp[k][1])):
-                temp.append([allicp[k][0],allicp[k][1][i]])
-            break
+            temp.append([allicp[k][0], allicp[k][1][:19-numcols]])
+            allicpsections.append(temp)
 
-    allicpsections.append
-            
+            # Determining how many columns remain
+            remainingcols = len(allicp[k][1]) - (19-numcols)
+
+            # Then emptying the temporary list and adding the rest of the data to it (up to 19 columns)
+            temp = []
+
+            # If there are no more than 19 columns, then add all of them
+            if remainingcols <= 19:
+                temp.append([allicp[k][0],allicp[k][1][19-numcols:]])
+                numcols = remainingcols
+            else:
+                start = 19-numcols
+                for a in range(math.ceil(remainingcols/19)):
+
+                    temp.append([allicp[k][0],allicp[k][1][start:start+19]])
+                    allicpsections.append(temp)
+                    temp = []
+                    start = start+19
+
+            numcols = len(allicp[k][1]) - (19-numcols)
+
+    # If there is still information in the temporary list, then append that list to the allicpsections list
+    if len(temp) > 0:
+        allicpsections.append(temp)
 
 
     def addICPTable(pdf, allicp):
@@ -824,46 +822,18 @@ def overallCompositions(batchids):
         pdf.set_font('Helvetica', '', 8)
         pdf.set_line_width(0.5)
 
-        # Determining where the top of the table is going to be
-        top = pdf.get_y()
-
         # Creating the table header
         pdf.cell(14, 5, 'Element', 1, fill=True)
 
-        # The number of columns in the table should not exceed 20. If there are more than 20 columns, 
-        # then the table will be split into multiple tables
-        numcols = 0
-        lastnumcols = 0
-
         # Writing the batch number as the column header
         for item in allicp:
-
-            # Updating the number of total columns
-            lastnumcols = numcols
-            numcols += len(item[1])
-
-            # If the total number of columns is less than 20, then write the batch number as the column header
-            if numcols < 20:
-                if len(item[1]) > 1:
-                    pdf.cell(9*len(item[1]), 5, item[0], 1, 0, 'C', fill=True)
-                elif len(item[1]) == 1:
-                    pdf.cell(18, 5, item[0], 1, 0, 'C', fill=True)
-                    # Adding an extra column to numcolums since this one is twice as wide
-                    numcols += 1
-
-            # If the total number of columns is greater than 20, then make the cell only as large as the remaining columns to 19
-            elif numcols >= 20:
-                if len(item[1]) > 1:
-                    pdf.cell(9*(20-lastnumcols), 5, item[0], 1, 0, 'C', fill=True)
-                elif len(item[1]) == 1:
-                    pdf.cell(18, 5, item[0], 1, 0, 'C', fill=True)
-                break
-
-
+            if len(item[1]) > 1:
+                pdf.cell(9*len(item[1]), 5, item[0], 1, 0, 'C', fill=True)
+            elif len(item[1]) == 1:
+                pdf.cell(18, 5, item[0], 1, 0, 'C', fill=True)
 
 
         # A second row will be added to the table that shows the process for each batch
-        # The same number of columns as the first row will be added
         pdf.set_xy(pdf.l_margin, pdf.get_y() + 5)
         pdf.cell(14, 5, '', 1, fill=True)
         for item in allicp:
@@ -884,8 +854,9 @@ def overallCompositions(batchids):
 
         # Creating the table body
         pdf.set_line_width(0.2)
-        # Adding a 'Total' to the elementlist
-        elementlist.append('Total')
+        # Adding a 'Total' to the elementlist if it isn't already there
+        if 'Total' not in elementlist:
+            elementlist.append('Total')
 
         # Writing the table body
         for element in elementlist:
@@ -972,7 +943,8 @@ def overallCompositions(batchids):
 
     # If ICP data was found, then create the table
     if createICPTable:
-        addICPTable(pdf, allicp)
+        for item in allicpsections:
+            addICPTable(pdf, item)
     else:
         # If no ICP data was found (and therefore no table was created), then write that there was no ICP data
         pdf.set_xy(pdf.l_margin, pdf.get_y() + 15)
@@ -1843,4 +1815,4 @@ def createReport(batchid, type, multiply=False):
 
 
 # Creating a report
-createReport(batchid='B230448', type='comprehensive', multiply=False)
+createReport(batchid='B230012', type='comprehensive', multiply=False)

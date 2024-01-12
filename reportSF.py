@@ -226,20 +226,10 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
     results = sf.makeArray(cur.fetchall())[0]
     runinfo.append(results[1] + ' (' + results[0] + ')')    # Combining the nvn_eq_id and name into one entry
     runinfo.append(results[2])                            # Adding the process_id to the runinfo array
-
-    # Determining what date the batch was run in, in the format of YYYY-MM-DD
-    day = runinfo[7].strftime("%Y-%m-%d")
-    year = day[0:4]
-    month = day[5:7]
-
-    # If the day is on or before the cutoff date, then change the database name to the appropriate name
-    if day <= cutoffdate:
-        database = 'SCADA_' + year
-    else:
-        database = 'SCADA_' + year + '_' + month
+    
 
     # Changing to match the new database name
-    # database = 'SCADA_History'
+    database = 'SCADA_History'
 
     # Generating name of the first table to be looked at, based off of timestamp associated with batch ID input
     # If the start time is before 7:47 AM, then the table will be the previous day's table. Otherwise it is the same day's table
@@ -277,15 +267,12 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
     # Getting tag 5872 data from start table(s)
     onoffdata = []
     for table in tables:
-        print(table)
         cur.execute("SELECT intvalue, t_stamp FROM {} WHERE tagid IN ({})".format(table,onoff))
         onoffdata += sf.makeArray(cur.fetchall())
 
     # Now determining where the start point of the run is
     startpoint = [i for i in range(1,len(onoffdata)) if onoffdata[i-1][0] == 0 and onoffdata[i][0] == 1]
-    print('Initial startpoints: {}'.format(startpoint))
     initialstarttimes = [datetime.datetime.fromtimestamp(onoffdata[i][1]/1000) for i in startpoint]
-    print('Initial starttimes: {}'.format(initialstarttimes))
 
 
     # If there are multiple startpoints, then use the one whose index corresponds closest to the date listed in runinfo[7]
@@ -428,7 +415,6 @@ def makeReport(batchid, runarray, filepath, multiply=False, reporttype='full',pd
             result = sf.makeArray(cur.fetchall())[0]
             furnace_temp = result[0]
             stoptime = result[1]
-            print('New stoptime: {}'.format(datetime.datetime.fromtimestamp(stoptime/1000)))
         except:
             print('All furnace temps in this table after the stoptime are above 75. Will check the next table')
 

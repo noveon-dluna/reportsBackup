@@ -96,19 +96,9 @@ def makeReport(runarray, filepath, pdf, reporttype, multiply=False):
 
     print('Starting time is: {}'.format(startdatetime))
 
-    # Determining what date the batch was run in, in the format of YYYY-MM-DD
-    day = startdatetime.strftime("%Y-%m-%d")
-    month = day[5:7]
-    year = day[0:4]
-
-    # If the day is before the cutoff date, then change the database name to the appropriate year
-    if startdatetime.strftime("%Y-%m-%d") <= cutoffdate:
-        database = 'SCADA_' + year
-    else:
-        database = 'SCADA_' + year + '_' + month
 
     # Changing to match the new database name
-    # database = 'SCADA_History'
+    database = 'SCADA_History'
         
     # Getting a starting table from the date in runinfo
     starttable = database + '.sqlt_data_1_' + datetime.datetime.strftime(startdatetime, "%Y%m%d")
